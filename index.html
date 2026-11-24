@@ -5,384 +5,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#080d18">
+    <meta name="theme-color" content="#030906">
 
-    <title>MEGA SIC BAC</title>
+    <title>GO PLAY | Painel de Análises</title>
+
+    <meta name="application-name" content="GO PLAY">
+    <meta name="apple-mobile-web-app-title" content="GO PLAY">
+    <meta name="description" content="GO PLAY - Painel de análises demonstrativas.">
+
+    <link rel="manifest" href="manifest.json">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
-
-    <link rel="icon" type="image/png" href="dados.png">
-    <link rel="apple-touch-icon" href="dados.png">
-    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="dados.png" type="image/png">
 </head>
 
 <body>
 
-<div class="app">
+<main class="container">
 
     <header class="header">
-        <div class="brand">
-            <div>
-                <h1>MEGA SIC BAC</h1>
-                <span>PAINEL DE ANÁLISE</span>
-            </div>
+        <div class="logo">
+            <span class="logo-symbol"><img src="img/claude.png" alt=""></span>
         </div>
 
-        <button class="icon-button" id="settingsButton">⚙</button>
+        <div class="brand">
+            <h1>Análise Claude AI - Mega Sic Bac</h1>
+            <span>MEGA SIC V1.0</span>
+        </div>
+
+        <div class="sparkle">✧</div>
     </header>
 
-    <main>
+    <!-- PAINEL DE CORES -->
+    <section class="panel">
 
-        
-<!-- AVISO DE GRANDE ATUALIZAÇÃO -->
-<div class="update-banner">
-
-    <div class="update-banner-top">
-        <span class="update-badge">COMUNICADO OFICIAL</span>
-        <span class="update-date">16.11.2026</span>
-    </div>
-
-    <div class="update-banner-content">
-
-        <div class="update-icon">🚀</div>
-
-        <div class="update-text">
-            <h2>GRANDE ATUALIZAÇÃO DO SISTEMA</h2>
-
+        <div class="warning">
+            <span class="warning-icon">ⓘ</span>
             <p>
-                No dia <strong>16/11</strong>, o MEGA SIC BAC receberá
-                uma grande atualização, trazendo novas funcionalidades,
-                melhorias e novidades para o sistema.
+                Essa é uma ferramenta de análise  baseada
+                em resultados historicos do jogo , e não deve ser considerada como sinal.
+                A decisão de seguir a analise ou não e exclusivamente sua!
             </p>
-
-            <span>Uma nova experiência está chegando. Fique atento!</span>
         </div>
 
-    </div>
+        <div class="color-results">
 
-</div>
-
-
-
-        <!-- ÁREA DO JOGO -->
-        <section id="inicio" class="section">
-
-            <div class="section-heading">
-                <h2>ÁREA DO JOGO</h2>
-                <button id="toggleGame">Expandir</button>
+            <div class="color-card player">
+                <strong id="playerPercent">--<small>%</small></strong>
+                <span>JOGADOR</span>
             </div>
 
-            <div class="game-card" id="gameCard">
-                <iframe
-                    id="gameFrame"
-                    src="about:blank"
-                    title="Área configurável do jogo">
-                </iframe>
-
-                <p id="gamePlaceholder">
-                    Configure o endereço do iframe nas configurações.
-                </p>
+            <div class="color-card tie">
+                <strong id="tiePercent">--<small>%</small></strong>
+                <span>EMPATE</span>
             </div>
 
-        </section>
-
-
-        <div class="analysis-grid">
-
-            <!-- ANÁLISE DE CORES -->
-            <section id="cores" class="panel">
-
-                <div class="panel-header">
-                    <div>
-                        <span class="eyebrow">ANÁLISE 01</span>
-                        <h2>ANÁLISE DE CORES</h2>
-                    </div>
-
-                    <span class="status-dot"></span>
-                </div>
-
-                <div class="result-box">
-                    <span class="result-label">RESULTADO</span>
-                    <h3 id="colorResult">AGUARDANDO</h3>
-                    <p id="colorProtection">PROTEGER EMPATE ATÉ G1</p>
-                    <strong id="colorPercentage">--%</strong>
-                </div>
-
-                <div class="progress-track">
-                    <div id="colorProgress" class="progress-fill"></div>
-                </div>
-
-                <p id="colorStatus" class="status-text">
-                    Sistema disponível
-                </p>
-
-                <button class="primary-button" id="colorButton">
-                    ANALISAR CORES
-                </button>
-
-                <!-- CENTRAL DE IA - CORES -->
-                <div class="visual-processing visual-disabled">
-
-                    <div class="visual-processing-title">
-                        CENTRAL DE INTELIGÊNCIA ARTIFICIAL
-                    </div>
-
-                    <div class="visual-processing-track">
-
-                        <div class="visual-agent">
-                            <div class="visual-agent-icon">
-                                <img src="img/gpt.png" alt="GPT">
-                            </div>
-                            <div class="visual-agent-name">GPT</div>
-                            <span class="visual-coming-soon">EM BREVE</span>
-                        </div>
-
-                        <div class="visual-agent">
-                            <div class="visual-agent-icon">
-                                <img src="img/claude.png" alt="Claude">
-                            </div>
-                            <div class="visual-agent-name">CLAUDE</div>
-                            <span class="visual-coming-soon">EM BREVE</span>
-                        </div>
-
-                        <div class="visual-agent">
-                            <div class="visual-agent-icon">
-                                <img src="img/gemini.png" alt="Gemini">
-                            </div>
-                            <div class="visual-agent-name">GEMINI</div>
-                            <span class="visual-coming-soon">EM BREVE</span>
-                        </div>
-
-                        <div class="visual-agent">
-                            <div class="visual-agent-icon">
-                                <img src="img/deepseek.png" alt="DeepSeek">
-                            </div>
-                            <div class="visual-agent-name">DEEPSEEK</div>
-                            <span class="visual-coming-soon">EM BREVE</span>
-                        </div>
-
-                    </div>
-
-                    <div class="visual-processing-message">
-                        Integrações em desenvolvimento
-                    </div>
-
-                </div>
-
-                <div class="countdown" id="colorCountdown"></div>
-
-            </section>
-
-
-            <!-- ANÁLISE DE DUPLOS -->
-            <section id="duplos" class="panel">
-
-                <div class="panel-header">
-                    <div>
-                        <span class="eyebrow">ANÁLISE 02</span>
-                        <h2>ANÁLISE DE DUPLOS</h2>
-                    </div>
-
-                    <span class="status-dot"></span>
-                </div>
-
-                <div class="dice-grid" id="diceGrid">
-                    <div class="die" data-number="1"></div>
-                    <div class="die" data-number="2"></div>
-                    <div class="die" data-number="3"></div>
-                    <div class="die" data-number="4"></div>
-                    <div class="die" data-number="5"></div>
-                    <div class="die" data-number="6"></div>
-                </div>
-
-                <div class="result-box">
-                    <span class="result-label">
-                        TRÊS MAIORES PERCENTUAIS
-                    </span>
-
-                    <div id="doubleResult" class="ranking">
-                        Aguardando análise
-                    </div>
-
-                    <p>PROTEÇÃO ATÉ G2</p>
-                </div>
-
-                <div class="progress-track">
-                    <div id="doubleProgress" class="progress-fill"></div>
-                </div>
-
-                <p id="doubleStatus" class="status-text">
-                    Sistema disponível
-                </p>
-
-                <button class="primary-button" id="doubleButton">
-                    ANALISAR MELHOR DUPLO
-                </button>
-
-                <!-- CENTRAL DE IA - DUPLOS -->
-                <div class="visual-processing visual-disabled">
-
-                    <div class="visual-processing-title">
-                        CENTRAL DE INTELIGÊNCIA ARTIFICIAL
-                    </div>
-
-                    <div class="visual-processing-track">
-
-                        <div class="visual-agent">
-                            <div class="visual-agent-icon">
-                                <img src="img/gpt.png" alt="GPT">
-                            </div>
-                            <div class="visual-agent-name">GPT</div>
-                            <span class="visual-coming-soon">EM BREVE</span>
-                        </div>
-
-                        <div class="visual-agent">
-                            <div class="visual-agent-icon">
-                                <img src="img/claude.png" alt="Claude">
-                            </div>
-                            <div class="visual-agent-name">CLAUDE</div>
-                            <span class="visual-coming-soon">EM BREVE</span>
-                        </div>
-
-                        <div class="visual-agent">
-                            <div class="visual-agent-icon">
-                                <img src="img/gemini.png" alt="Gemini">
-                            </div>
-                            <div class="visual-agent-name">GEMINI</div>
-                            <span class="visual-coming-soon">EM BREVE</span>
-                        </div>
-
-                        <div class="visual-agent">
-                            <div class="visual-agent-icon">
-                                <img src="img/deepseek.png" alt="DeepSeek">
-                            </div>
-                            <div class="visual-agent-name">DEEPSEEK</div>
-                            <span class="visual-coming-soon">EM BREVE</span>
-                        </div>
-
-                    </div>
-
-                    <div class="visual-processing-message">
-                        Integrações em desenvolvimento
-                    </div>
-
-                </div>
-
-                <div class="countdown" id="doubleCountdown"></div>
-
-            </section>
+            <div class="color-card banker">
+                <strong id="bankerPercent">--<small>%</small></strong>
+                <span>BANCA</span>
+            </div>
 
         </div>
 
+        <button class="main-button purple-button" id="colorButton">
+            <span>ϟ</span>
+            GERAR ANÁLISE
+        </button>
 
-        <!-- MELHORES HORÁRIOS -->
-        <section id="triplos" class="panel">
+        <div class="summary hidden" id="colorSummary">
+            <div class="summary-title">RESULTADO DA ANALISE</div>
+            <div class="summary-result" id="colorWinner">--</div>
+            <div class="summary-description" id="colorDescription">
+                Percentual demonstrativo mais alto.
+            </div>
+        </div>
 
-            <div class="panel-header">
-                <div>
-                    <span class="eyebrow">ANÁLISE 03</span>
-                    <h2>MELHORES HORÁRIOS — TRIPLOS</h2>
+        <div class="responsibility">
+            <div class="age">18+</div>
+            <div class="responsibility-content">
+                <p>Ministério da Fazenda adverte: Aposta não é investimento.</p>
+                <strong>JOGUE COM RESPONSABILIDADE.</strong>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- PAINEL DE DUPLOS -->
+    <section class="panel doubles-panel">
+
+        <header class="section-header">
+            <h2> <img src="img/claude.png" alt="">Análise Claude AI - Duplos | Mega Sic Bac</h2>
+            <span>MEGA SIC V1.0</span>
+        </header>
+
+        <div class="warning">
+            <span class="warning-icon">ⓘ</span>
+             <p>
+                Essa é uma ferramenta de análise  baseada
+                em resultados historicos do jogo , e não deve ser considerada como sinal.
+                A decisão de seguir a analise ou não e exclusivamente sua!
+            </p>
+        </div>
+
+        <div class="dice-area" id="diceArea">
+
+            <div class="dice white-dice" data-dice="0">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d1"></i>
                 </div>
-
-                <span id="clock">--:--:--</span>
             </div>
 
-            <div class="time-list" id="timeList"></div>
-
-        </section>
-
-
-        <!-- HISTÓRICO -->
-        <section id="historico" class="panel">
-
-            <div class="panel-header">
-                <div>
-                    <span class="eyebrow">REGISTROS</span>
-                    <h2>HISTÓRICO</h2>
-                </div>
-
-                <button id="clearHistory" class="secondary-button">
-                    Limpar
-                </button>
-            </div>
-
-            <div id="historyList" class="history-list">
-                Nenhum registro disponível.
-            </div>
-
-        </section>
-
-
-        <!-- CONFIGURAÇÕES -->
-        <section id="configuracoes" class="panel settings-panel">
-
-            <div class="panel-header">
-                <div>
-                    <span class="eyebrow">PERSONALIZAÇÃO</span>
-                    <h2>CONFIGURAÇÕES</h2>
+            <div class="dice white-dice" data-dice="1">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d2"></i>
+                    <i class="dot d4"></i>
                 </div>
             </div>
 
-            <label class="setting-row">
-                <span>Tema escuro</span>
-                <input type="checkbox" id="themeToggle" checked>
-            </label>
+            <div class="dice white-dice" data-dice="2">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d1"></i>
+                    <i class="dot d3"></i>
+                    <i class="dot d5"></i>
+                </div>
+            </div>
 
-            <label class="setting-row">
-                <span>Sons do aplicativo</span>
-                <input type="checkbox" id="soundToggle">
-            </label>
+            <div class="dice black-dice" data-dice="3">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d1"></i>
+                    <i class="dot d2"></i>
+                    <i class="dot d4"></i>
+                    <i class="dot d5"></i>
+                </div>
+            </div>
 
-            <label class="setting-row iframe-setting">
-                <span>Endereço do iframe</span>
-                <input
-                    type="url"
-                    id="iframeUrl"
-                    placeholder="https://exemplo.com">
-            </label>
+            <div class="dice black-dice" data-dice="4">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d1"></i>
+                    <i class="dot d2"></i>
+                    <i class="dot d3"></i>
+                    <i class="dot d4"></i>
+                    <i class="dot d5"></i>
+                </div>
+            </div>
 
-            <button class="primary-button" id="saveSettings">
-                SALVAR CONFIGURAÇÕES
-            </button>
+            <div class="dice black-dice" data-dice="5">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d1"></i>
+                    <i class="dot d2"></i>
+                    <i class="dot d3"></i>
+                    <i class="dot d4"></i>
+                    <i class="dot d5"></i>
+                    <i class="dot d6"></i>
+                </div>
+            </div>
 
-        </section>
+        </div>
 
-    </main>
+        <div class="scanner-box hidden" id="scannerBox">
+            <div class="scanner-heading">
+                
+                <span  id="scannerStatus"></span>
+            </div>
 
+            <div class="scanner-track">
+                <div class="scanner-progress" id="scannerProgress"></div>
+            </div>
 
-    <!-- NAVEGAÇÃO INFERIOR -->
-    <nav class="bottom-nav">
+            <div class="scanner-message" id="scannerMessage">
+                Inicializando sistema...
+            </div>
+        </div>
 
-        <a href="#inicio">
-            <span>⌂</span>
-            Início
-        </a>
+        <button class="main-button orange-button" id="doublesButton">
+            <span>ϟ</span>
+            GERAR ANÁLISE DE DUPLOS
+        </button>
 
-        <a href="#cores">
-            <span>◉</span>
-            Cores
-        </a>
+        <div  id="doublesSummary">
+            
+        </div>
 
-        <a href="#duplos">
-            <span>⚄</span>
-            Duplos
-        </a>
+        <div class="responsibility">
+            <div class="age">18+</div>
+            <div class="responsibility-content">
+                <p>Ministério da Fazenda adverte: Aposta não é investimento.</p>
+                <strong>JOGUE COM RESPONSABILIDADE.</strong>
+            </div>
+        </div>
 
-        <a href="#triplos">
-            <span>◷</span>
-            Triplos
-        </a>
+    </section>
 
-        <a href="#configuracoes">
-            <span>⚙</span>
-            Ajustes
-        </a>
+    <!-- NAVEGADOR -->
+    <section class="browser-panel">
 
-    </nav>
+        <div class="browser-heading">
+            <div>
+                <h2>Central de navegação</h2>
+                <span>ACESSE UMA PÁGINA EXTERNA</span>
+            </div>
+            <span class="browser-icon">↗</span>
+        </div>
 
-</div>
+        <form id="urlForm" class="url-form">
+            <input
+                type="url"
+                id="urlInput"
+                placeholder="https://exemplo.com"
+                autocomplete="url"
+                required
+            >
+            <button type="submit">ABRIR</button>
+        </form>
+
+        <div class="iframe-container">
+            <div class="iframe-placeholder" id="iframePlaceholder">
+                <span>◎</span>
+                <p>Sua página aparecerá aqui</p>
+                <small>Digite um endereço acima para começar.</small>
+            </div>
+
+            <iframe
+                id="siteFrame"
+                title="Navegador externo"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                allowfullscreen
+            ></iframe>
+        </div>
+
+        <p class="browser-note">
+            Algumas páginas bloqueiam a exibição em iframe por questões
+            de segurança. Nesses casos, abra o endereço em uma nova aba.
+        </p>
+
+    </section>
+
+    <footer>
+        GO PLAY · PAINEL 
+    </footer>
+
+</main>
 
 <script src="script.js"></script>
-
 </body>
 </html>

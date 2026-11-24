@@ -1,599 +1,529 @@
 
 "use strict";
 
-const $ = selector => document.querySelector(selector);
+/* ==========================================
+   CONFIGURAÇÕES
+========================================== */
 
 const CONFIG = {
-    colorAnalysis: 10000,
-    colorCooldown: 40000,
-    doubleAnalysis: 15000,
-    doubleCooldown: 30000
+    scannerDuration: 7000,
+    colorCooldown: 10000,
+    doublesCooldown: 15000,
+
+    whiteDiceMin: 66,
+    whiteDiceMax: 88,
+
+    blackDiceMin: 15,
+    blackDiceMax: 27,
+
+    tieMax: 3
 };
 
-const colorEntries = [
-    "PLAYER OU EMPATE",
-    "BANKER OU EMPATE",
-    "PLAYER",
-    "BANKER"
-];
+/* ==========================================
+   ELEMENTOS
+========================================== */
 
-const state = {
-    colors: {
-        running: false,
-        blockedUntil: 0,
-        timer: null
-    },
-    doubles: {
-        running: false,
-        blockedUntil: 0,
-        timer: null
-    },
-    sound: false,
-    audio: null,
-    history: JSON.parse(localStorage.getItem("megaHistory") || "[]"),
-    timeResults: {}
-};
+const $ = selector => document.querySelector(selector);
 
-/* SOM */
+const colorButton = $("#colorButton");
+const doublesButton = $("#doublesButton");
 
-function playSound(frequency = 600) {
-    if (!state.sound) return;
+const playerPercent = $("#playerPercent");
+const tiePercent = $("#tiePercent");
+const bankerPercent = $("#bankerPercent");
 
-    try {
-        state.audio ||= new AudioContext();
+const colorSummary = $("#colorSummary");
 
-        const oscillator = state.audio.createOscillator();
-        const gain = state.audio.createGain();
 
-        oscillator.frequency.value = frequency;
-        gain.gain.value = 0.05;
+const diceArea = $("#diceArea");
+const dice = [...document.querySelectorAll(".dice")];
 
-        oscillator.connect(gain);
-        gain.connect(state.audio.destination);
+const urlForm = $("#urlForm");
+const urlInput = $("#urlInput");
+const siteFrame = $("#siteFrame");
+const iframePlaceholder = $("#iframePlaceholder");
 
-        oscillator.start();
-        oscillator.stop(state.audio.currentTime + 0.12);
-    } catch (error) {
-        console.warn("Áudio indisponível.");
-    }
+let colorRunning = false;
+let doublesRunning = false;
+let audioContext = null;
+
+const cooldownTimers = new WeakMap();
+
+/* ==========================================
+   FUNÇÕES AUXILIARES
+========================================== */
+
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/* HISTÓRICO */
-
-function saveHistory(type, result) {
-    const item = {
-        type,
-        result,
-        date: new Date().toLocaleString("pt-BR")
-    };
-
-    state.history.unshift(item);
-    state.history = state.history.slice(0, 40);
-
-    localStorage.setItem("megaHistory", JSON.stringify(state.history));
-
-    renderHistory();
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function startCooldown(button, duration, originalText, isRunning) {
+    if (!button) return;
 
-function renderHistory() {
-    const container = $("#historyList");
+    const previousTimer = cooldownTimers.get(button);
 
-    if (!state.history.length) {
-        container.textContent = "Nenhum registro disponível.";
-        return;
+    if (previousTimer) {
+        clearTimeout(previousTimer);
     }
 
-    container.innerHTML = state.history.map(item => {
-        const result = String(item.result || "").toUpperCase();
+    const deadline = Date.now() + duration;
 
-        const isGreen = result.includes("GREEN");
-        const isRed = result.includes("RED");
-
-        let statusClass = "";
-
-        if (isGreen) {
-            statusClass = "history-green";
-        } else if (isRed) {
-            statusClass = "history-red";
-        }
-
-        return `
-            <div class="history-item ${statusClass}">
-                <div class="history-info">
-                    <strong>${escapeHTML(item.type)}</strong>
-                    <div class="history-date">
-                        ${escapeHTML(item.date)}
-                    </div>
-                </div>
-
-                <strong class="history-result">
-                    ${escapeHTML(item.result)}
-                </strong>
-            </div>
-        `;
-    }).join("");
-}
-
-function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-    })[char]);
-}
-
-/* TEMPORIZADORES INDEPENDENTES */
-
-function runAnalysis(config) {
-    const { key, duration, cooldown, button, status, progress, countdown, callback } = config;
-
-    const system = state[key];
-
-    if (system.running || Date.now() < system.blockedUntil) return;
-
-    system.running = true;
     button.disabled = true;
 
-    const started = Date.now();
-    const ends = started + duration;
-
-    status.textContent = "Processamento em andamento...";
-    progress.style.width = "0%";
-
-    playSound(500);
-
-    clearInterval(system.timer);
-
-    system.timer = setInterval(() => {
-        const remaining = Math.max(0, ends - Date.now());
-        const percent = Math.min(100, ((duration - remaining) / duration) * 100);
-
-        progress.style.width = percent + "%";
-        status.textContent = `Analisando... ${Math.ceil(remaining / 1000)}s`;
+    function updateCooldown() {
+        const remaining = Math.max(0, deadline - Date.now());
 
         if (remaining <= 0) {
-            clearInterval(system.timer);
-
-            callback();
-
-            system.running = false;
-            system.blockedUntil = Date.now() + cooldown;
-
-            playSound(850);
-
-            startCooldown({
-                system,
-                button,
-                countdown,
-                status,
-                progress
-            });
-        }
-    }, 100);
-}
-
-function startCooldown({ system, button, countdown, status, progress }) {
-    const update = () => {
-        const remaining = Math.max(0, system.blockedUntil - Date.now());
-
-        if (remaining <= 0) {
-            clearInterval(system.cooldownTimer);
-            system.cooldownTimer = null;
             button.disabled = false;
-            countdown.textContent = "";
-            status.textContent = "Sistema disponível";
-            progress.style.width = "0%";
-            playSound(700);
+            button.innerHTML = originalText;
+            cooldownTimers.delete(button);
             return;
         }
 
-        button.disabled = true;
-        countdown.textContent = `NOVAMENTE EM ${Math.ceil(remaining / 1000)} SEGUNDOS`;
-    };
-
-    update();
-
-    clearInterval(system.cooldownTimer);
-    system.cooldownTimer = setInterval(update, 200);
-}
-
-/* ANÁLISE DE CORES */
-
-
-/* ANÁLISE DE CORES */
-
-$("#colorButton").addEventListener("click", () => {
-    runAnalysis({
-        key: "colors",
-        duration: CONFIG.colorAnalysis,
-        cooldown: CONFIG.colorCooldown,
-        button: $("#colorButton"),
-        status: $("#colorStatus"),
-        progress: $("#colorProgress"),
-        countdown: $("#colorCountdown"),
-
-        callback: () => {
-            const entry = colorEntries[
-                Math.floor(Math.random() * colorEntries.length)
-            ];
-
-            const percentage = Math.floor(Math.random() * 18) + 80;
-
-            const resultElement = $("#colorResult");
-
-            // ATUALIZAR RESULTADO
-            resultElement.textContent = entry;
-
-            // REMOVER CORES ANTERIORES
-            resultElement.classList.remove(
-                "banker-color",
-                "player-color"
-            );
-
-            // APLICAR COR CORRESPONDENTE
-            if (entry.includes("BANKER")) {
-                resultElement.classList.add("banker-color");
-            } else if (entry.includes("PLAYER")) {
-                resultElement.classList.add("player-color");
-            }
-
-            // ATUALIZAR PORCENTAGEM
-            $("#colorPercentage").textContent = percentage + "%";
-
-            // REGISTRAR NO HISTÓRICO
-            saveHistory("CORES", entry);
-
-            // FINALIZAR
-            $("#colorStatus").textContent = "Análise concluída";
+        if (isRunning()) {
+            button.innerHTML = "ϟ ANALISANDO...";
+        } else {
+            const seconds = Math.ceil(remaining / 1000);
+            button.innerHTML = `ϟ AGUARDE ${seconds}s`;
         }
-    });
-});
 
+        const timer = setTimeout(updateCooldown, 200);
+        cooldownTimers.set(button, timer);
+    }
 
-/* DADOS TRADICIONAIS */
-
-const dicePatterns = {
-    1: [0, 0, 0, 0, 1, 0, 0, 0, 0],
-    2: [1, 0, 0, 0, 0, 0, 0, 0, 1],
-    3: [1, 0, 0, 0, 1, 0, 0, 0, 1],
-    4: [1, 0, 1, 0, 0, 0, 1, 0, 1],
-    5: [1, 0, 1, 0, 1, 0, 1, 0, 1],
-    6: [1, 0, 1, 1, 0, 1, 1, 0, 1]
-};
-
-function renderDice() {
-    document.querySelectorAll(".die").forEach(die => {
-        const number = Number(die.dataset.number);
-
-        die.innerHTML = `
-            <div class="dots">
-                ${dicePatterns[number].map(value =>
-                    `<span class="pip ${value ? "" : "empty"}"></span>`
-                ).join("")}
-            </div>
-        `;
-    });
+    updateCooldown();
 }
-
-/* PORCENTAGENS EXATAS EM 100% */
-
-function generatePercentages() {
-    const values = Array.from({ length: 6 }, () =>
-        Math.floor(Math.random() * 100) + 1
-    );
-
-    const total = values.reduce((sum, value) => sum + value, 0);
-
-    const percentages = values.map(value =>
-        Math.round(value / total * 10000) / 100
-    );
-
-    const difference = 10000 -
-        percentages.reduce((sum, value) => sum + Math.round(value * 100), 0);
-
-    percentages[0] += difference / 100;
-
-    return percentages;
-}
-
-/* ANÁLISE DE DUPLOS */
 
 /* ==========================================
-   ANÁLISE DE DUPLOS
+   SISTEMA DE ÁUDIO
 ========================================== */
 
-$("#doubleButton").addEventListener("click", () => {
+async function getAudioContext() {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
 
-    runAnalysis({
-        key: "doubles",
-        duration: CONFIG.doubleAnalysis,
-        cooldown: CONFIG.doubleCooldown,
-        button: $("#doubleButton"),
-        status: $("#doubleStatus"),
-        progress: $("#doubleProgress"),
-        countdown: $("#doubleCountdown"),
+    if (!AudioCtx) return null;
 
-        callback: () => {
-
-            // GERAR PORCENTAGENS
-            const percentages = generatePercentages();
-
-            // ORGANIZAR OS SEIS DADOS
-            const ranking = percentages
-                .map((percentage, index) => ({
-                    number: index + 1,
-                    percentage
-                }))
-                .sort((a, b) => b.percentage - a.percentage);
-
-            // REMOVER DESTAQUES ANTERIORES
-            document.querySelectorAll(".die").forEach(die => {
-                die.classList.remove("selected");
-            });
-
-            // DESTACAR OS TRÊS MELHORES DADOS
-            ranking.slice(0, 3).forEach(item => {
-
-                const die = document.querySelector(
-                    `.die[data-number="${item.number}"]`
-                );
-
-                if (die) {
-                    die.classList.add("selected");
-                }
-
-            });
-
-            // EXIBIR OS TRÊS MELHORES RESULTADOS
-            $("#doubleResult").innerHTML = ranking
-                .slice(0, 3)
-                .map((item, index) => `
-                    <div class="ranking-item ${index === 0 ? "best" : ""}">
-
-                        <span>
-                            ${index + 1}º LUGAR — DADO ${item.number}
-                        </span>
-
-                        <strong>
-                            ${item.percentage.toFixed(2)}%
-                        </strong>
-
-                    </div>
-                `)
-                .join("");
-
-            // SALVAR NO HISTÓRICO
-            saveHistory(
-                "DUPLOS",
-                ranking
-                    .slice(0, 3)
-                    .map(item => item.number)
-                    .join(" / ")
-            );
-
-            // FINALIZAR ANÁLISE
-            $("#doubleStatus").textContent =
-                "Distribuição percentual concluída";
-
-        }
-
-    });
-
-});
-
-/* HORÁRIOS FUTUROS */
-
-function updateTimes() {
-    const now = new Date();
-
-    $("#clock").textContent = now.toLocaleTimeString("pt-BR");
-
-    const next = new Date(now);
-    next.setSeconds(0, 0);
-
-    const remainder = next.getMinutes() % 2;
-
-    if (remainder !== 0 || next <= now) {
-        next.setMinutes(next.getMinutes() + (remainder === 0 ? 2 : 1));
+    if (!audioContext) {
+        audioContext = new AudioCtx();
     }
 
-    const times = [];
-
-    for (let i = 0; i < 5; i++) {
-        const time = new Date(next.getTime() + i * 2 * 60000);
-        const key = time.toISOString();
-
-        times.push({
-            time,
-            key,
-            result: state.timeResults[key] || "QUENTE!"
-        });
+    if (audioContext.state !== "running") {
+        await audioContext.resume();
     }
 
-    $("#timeList").innerHTML = times.map((item, index) => {
-        const hot = index < 2;
-
-        return `
-            <div class="time-item ${hot ? "hot" : ""}">
-                <span class="time-rank">${index + 1}º</span>
-                <strong>${item.time.toLocaleTimeString("pt-BR", {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                })}</strong>
-                <span>${hot ? "HORÁRIO DESTACADO" : "MONITORAMENTO"}</span>
-                <span class="time-status ${
-                    item.result === "GREEN" ? "green" :
-                    item.result === "RED" ? "red" : "waiting"
-                }">${item.result}</span>
-            </div>
-        `;
-    }).join("");
+    return audioContext;
 }
 
-/* RESULTADOS DE HORÁRIOS */
-
-function processTimes() {
-    const now = Date.now();
-
-    const next = new Date();
-    next.setSeconds(0, 0);
-
-    const remainder = next.getMinutes() % 2;
-
-    if (remainder !== 0 || next <= new Date()) {
-        next.setMinutes(next.getMinutes() + (remainder === 0 ? 2 : 1));
-    }
-
-    for (let i = 0; i < 5; i++) {
-        const time = new Date(next.getTime() + i * 2 * 60000);
-        const key = time.toISOString();
-
-        if (now >= time.getTime() && !state.timeResults[key]) {
-            state.timeResults[key] = "QUENTE";
-        }
-    }
-
-    updateTimes();
-}
-
-/* IFRAME */
-
-$("#toggleGame").addEventListener("click", () => {
-    const card = $("#gameCard");
-    card.classList.toggle("expanded");
-
-    $("#toggleGame").textContent =
-        card.classList.contains("expanded") ? "Recolher" : "Expandir";
-});
-
-/* CONFIGURAÇÕES */
-
-function loadSettings() {
-    const theme = localStorage.getItem("megaTheme") || "dark";
-    const sound = localStorage.getItem("megaSound") === "true";
-    const iframe = localStorage.getItem("megaIframe") || "";
-
-    document.body.classList.toggle("light", theme === "light");
-
-    $("#themeToggle").checked = theme === "dark";
-    $("#soundToggle").checked = sound;
-    $("#iframeUrl").value = iframe;
-
-    state.sound = sound;
-
-    if (iframe) {
-        loadIframe(iframe);
-    }
-}
-
-function loadIframe(url) {
+async function playInterfaceSound() {
     try {
-        const parsed = new URL(url);
+        const ctx = await getAudioContext();
 
-        if (!["http:", "https:"].includes(parsed.protocol)) {
-            throw new Error("Endereço inválido");
-        }
+        if (!ctx) return;
 
-        $("#gameFrame").src = parsed.href;
-        $("#gameCard").classList.add("has-frame");
-    } catch {
-        alert("Informe um endereço HTTP ou HTTPS válido.");
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        oscillator.type = "sine";
+
+        oscillator.frequency.setValueAtTime(
+            1800,
+            ctx.currentTime
+        );
+
+        gain.gain.setValueAtTime(0.035, ctx.currentTime);
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            ctx.currentTime + 0.2
+        );
+
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+
+        oscillator.start();
+        oscillator.stop(ctx.currentTime + 0.22);
+
+    } catch (error) {
+        console.error("Erro no áudio:", error);
     }
 }
 
-$("#saveSettings").addEventListener("click", () => {
-    const theme = $("#themeToggle").checked ? "dark" : "light";
-    const sound = $("#soundToggle").checked;
-    const iframe = $("#iframeUrl").value.trim();
+async function playScannerSound() {
+    try {
+        const ctx = await getAudioContext();
 
-    localStorage.setItem("megaTheme", theme);
-    localStorage.setItem("megaSound", sound);
-    localStorage.setItem("megaIframe", iframe);
+        if (!ctx) return;
 
-    document.body.classList.toggle("light", theme === "light");
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
 
-    state.sound = sound;
+        oscillator.type = "sine";
 
-    if (iframe) {
-        loadIframe(iframe);
+        oscillator.frequency.setValueAtTime(
+            1450,
+            ctx.currentTime
+        );
+
+        oscillator.frequency.exponentialRampToValueAtTime(
+            2100,
+            ctx.currentTime + 0.09
+        );
+
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.025,
+            ctx.currentTime + 0.015
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            ctx.currentTime + 0.16
+        );
+
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+
+        oscillator.start();
+        oscillator.stop(ctx.currentTime + 0.17);
+
+    } catch (error) {
+        console.error("Erro no som do scanner:", error);
     }
-
-    playSound(750);
-});
-
-$("#settingsButton").addEventListener("click", () => {
-    $("#configuracoes").scrollIntoView({ behavior: "smooth" });
-});
-
-/* LIMPAR HISTÓRICO */
-
-$("#clearHistory").addEventListener("click", () => {
-    if (!confirm("Deseja limpar todo o histórico?")) return;
-
-    state.history = [];
-
-    localStorage.removeItem("megaHistory");
-
-    renderHistory();
-});
-
-/* INICIALIZAÇÃO */
-
-renderDice();
-renderHistory();
-loadSettings();
-processTimes();
-
-setInterval(processTimes, 1000);
+}
 
 /* ==========================================
-   REGISTRO MANUAL GREEN E RED
+   SIMULAÇÃO VISUAL DE CORES
 ========================================== */
 
-function registerManualResult(type, result) {
+function generateDemoPercentages() {
+    const tie = randomInt(0, CONFIG.tieMax);
+    const remaining = 100 - tie;
 
-    const name = type === "CORES"
-        ? $("#colorResult").textContent
-        : $("#doubleResult").innerText
-            .replace(/\s+/g, " ")
-            .trim();
+    const player = randomInt(1, remaining - 1);
+    const banker = remaining - player;
+
+    return {
+        player,
+        tie,
+        banker
+    };
+}
+
+function animateNumber(element, target) {
+    if (!element) return;
+
+    const duration = 1200;
+    const start = performance.now();
+
+    function update(now) {
+        const progress = Math.min(
+            (now - start) / duration,
+            1
+        );
+
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(target * eased);
+
+        element.innerHTML = `${current}<small>%</small>`;
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+function showColorSummary(values) {
+    const options = [
+        { name: "JOGADOR", value: values.player },
+        { name: "EMPATE", value: values.tie },
+        { name: "BANCA", value: values.banker }
+    ];
+
+    options.sort((a, b) => b.value - a.value);
+
+    const winner = $("#colorWinner");
+    const description = $("#colorDescription");
+
+    if (winner) {
+    winner.textContent =
+        `${options[0].name} · ${options[0].value}%`;
+
+    winner.classList.remove("player", "banker", "tie");
+
+    if (options[0].name === "JOGADOR") {
+        winner.classList.add("player");
+    } else if (options[0].name === "BANCA") {
+        winner.classList.add("banker");
+    } else {
+        winner.classList.add("tie");
+    }
+}
+
+    if (description) {
+        description.textContent =
+            "Proteja no empate ate G1";
+    }
+
+    colorSummary?.classList.remove("hidden");
+}
+
+async function generateColorDemo() {
+    if (colorRunning) return;
 
     if (
-        !name ||
-        name === "AGUARDANDO" ||
-        name === "Aguardando análise"
+        !colorButton ||
+        !playerPercent ||
+        !tiePercent ||
+        !bankerPercent ||
+        !colorSummary
     ) {
-        alert("Realize uma análise antes de registrar o resultado.");
+        console.error("Elementos das cores não encontrados.");
         return;
     }
 
-    saveHistory(
-        type,
-        `${result} - ${name}`
+    colorRunning = true;
+
+    startCooldown(
+        colorButton,
+        CONFIG.colorCooldown,
+        "ϟ GERAR ANÁLISE",
+        () => colorRunning
     );
 
-    playSound(result === "GREEN" ? 850 : 350);
+    try {
+        playInterfaceSound();
+
+        colorSummary.classList.add("hidden");
+
+        playerPercent.innerHTML = "--<small>%</small>";
+        tiePercent.innerHTML = "--<small>%</small>";
+        bankerPercent.innerHTML = "--<small>%</small>";
+
+        await sleep(350);
+
+        const values = generateDemoPercentages();
+
+        animateNumber(playerPercent, values.player);
+        animateNumber(tiePercent, values.tie);
+        animateNumber(bankerPercent, values.banker);
+
+        document.querySelectorAll(".color-card").forEach(card => {
+            card.classList.remove("updated");
+            void card.offsetWidth;
+            card.classList.add("updated");
+        });
+
+        await sleep(1400);
+
+        showColorSummary(values);
+
+    } catch (error) {
+        console.error("Erro nas cores:", error);
+
+    } finally {
+        colorRunning = false;
+    }
 }
 
-/* BOTÕES DA ANÁLISE DE CORES */
+colorButton?.addEventListener("click", generateColorDemo);
 
-$("#colorGreen").addEventListener("click", () => {
-    registerManualResult("CORES", "GREEN");
+/* ==========================================
+   DADOS - ESTADO INICIAL
+========================================== */
+
+function resetDice() {
+    if (!diceArea) return;
+
+    diceArea.classList.remove("scanning");
+
+    dice.forEach(item => {
+        item.classList.remove("black-dice");
+        item.classList.add("white-dice");
+
+        const liquid = item.querySelector(".liquid");
+
+        if (!liquid) return;
+
+        liquid.style.transition = "none";
+        liquid.style.height = "0%";
+
+        void liquid.offsetWidth;
+
+        liquid.style.transition =
+            "height 2.5s cubic-bezier(.18,.7,.25,1)";
+    });
+}
+
+/* ==========================================
+   EFEITO VISUAL DO SCANNER NOS DADOS
+========================================== */
+
+function startDiceScanner() {
+    diceArea?.classList.add("scanning");
+}
+
+function stopDiceScanner() {
+    diceArea?.classList.remove("scanning");
+}
+
+/* ==========================================
+   DISTRIBUIÇÃO VISUAL DOS DADOS
+========================================== */
+
+function shuffleArray(array) {
+    const shuffled = [...array];
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = randomInt(0, i);
+
+        [shuffled[i], shuffled[j]] =
+            [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
+}
+
+function fillDice() {
+    const blackIndexes = shuffleArray([0, 1, 2, 3, 4, 5])
+        .slice(0, 3);
+
+    dice.forEach((item, index) => {
+        const liquid = item.querySelector(".liquid");
+
+        if (!liquid) return;
+
+        const isBlack = blackIndexes.includes(index);
+
+        if (isBlack) {
+            item.classList.remove("white-dice");
+            item.classList.add("black-dice");
+
+            liquid.style.height = `${randomInt(
+                CONFIG.blackDiceMin,
+                CONFIG.blackDiceMax
+            )}%`;
+
+        } else {
+            item.classList.remove("black-dice");
+            item.classList.add("white-dice");
+
+            liquid.style.height = `${randomInt(
+                CONFIG.whiteDiceMin,
+                CONFIG.whiteDiceMax
+            )}%`;
+        }
+    });
+}
+
+/* ==========================================
+   ANÁLISE DEMONSTRATIVA DOS DUPLOS
+========================================== */
+
+async function generateDoublesDemo() {
+    if (doublesRunning) return;
+
+    if (!doublesButton || !diceArea || !doublesSummary) {
+        console.error("Elementos dos duplos não encontrados.");
+        return;
+    }
+
+    doublesRunning = true;
+
+    startCooldown(
+        doublesButton,
+        CONFIG.doublesCooldown,
+        "ϟ GERAR ANÁLISE DE DUPLOS",
+        () => doublesRunning
+    );
+
+    try {
+        playInterfaceSound();
+
+        doublesSummary.classList.add("hidden");
+
+        resetDice();
+
+        startDiceScanner();
+
+        await sleep(CONFIG.scannerDuration);
+
+        stopDiceScanner();
+
+        fillDice();
+
+        playScannerSound();
+
+        await sleep(2600);
+
+        doublesSummary.classList.remove("hidden");
+
+    } catch (error) {
+        console.error("Erro na animação:", error);
+
+    } finally {
+        stopDiceScanner();
+        doublesRunning = false;
+    }
+}
+
+doublesButton?.addEventListener(
+    "click",
+    generateDoublesDemo
+);
+
+/* ==========================================
+   CENTRAL DE NAVEGAÇÃO / IFRAME
+========================================== */
+
+urlForm?.addEventListener("submit", event => {
+    event.preventDefault();
+
+    let address = urlInput?.value.trim();
+
+    if (!address) return;
+
+    try {
+        if (!/^https?:\/\//i.test(address)) {
+            address = "https://" + address;
+        }
+
+        const parsed = new URL(address);
+
+        if (
+            parsed.protocol !== "https:" &&
+            parsed.protocol !== "http:"
+        ) {
+            throw new Error("Endereço inválido.");
+        }
+
+        if (!siteFrame) {
+            throw new Error("Iframe não encontrado.");
+        }
+
+        siteFrame.src = parsed.href;
+        siteFrame.style.display = "block";
+
+        if (iframePlaceholder) {
+            iframePlaceholder.style.display = "none";
+        }
+
+    } catch (error) {
+        console.error("Erro no endereço:", error);
+        alert("Digite um endereço válido.");
+    }
 });
 
-$("#colorRed").addEventListener("click", () => {
-    registerManualResult("CORES", "RED");
-});
+/* ==========================================
+   INICIALIZAÇÃO
+========================================== */
 
-/* BOTÕES DA ANÁLISE DE DUPLOS */
+resetDice();
 
-$("#doubleGreen").addEventListener("click", () => {
-    registerManualResult("DUPLOS", "GREEN");
-});
-
-$("#doubleRed").addEventListener("click", () => {
-    registerManualResult("DUPLOS", "RED");
-});
+console.log("MEGA SIC - Interface inicializada.");

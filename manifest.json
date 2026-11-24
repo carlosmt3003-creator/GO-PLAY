@@ -1,21 +1,31 @@
 
 {
-    "name": "MEGA SIC BAC",
-    "short_name": "MEGA SIC BAC",
+    "id": "./",
+    "name": "GO PLAY",
+    "short_name": "GO PLAY",
+    "description": "GO PLAY - Painel de demonstrações.",
     "start_url": "./",
+    "scope": "./",
     "display": "standalone",
-    "background_color": "#080d18",
-    "theme_color": "#080d18",
+    "orientation": "any",
+    "background_color": "#030906",
+    "theme_color": "#030906",
+    "categories": [
+        "utilities",
+        "entertainment"
+    ],
     "icons": [
         {
-            "src": "dados.png",
+            "src": "./dados.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
-            "src": "dados.png",
+            "src": "./dados.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         }
     ]
 }
