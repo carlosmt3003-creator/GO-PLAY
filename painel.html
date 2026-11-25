@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#030906">
+
+    <title>GO PLAY | Painel de Análises</title>
+
+    <meta name="application-name" content="GO PLAY">
+    <meta name="apple-mobile-web-app-title" content="GO PLAY">
+    <meta name="description" content="GO PLAY - Painel de análises demonstrativas.">
+
+    <link rel="manifest" href="manifest.json">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="dados.png" type="image/png">
+</head>
+
+<body>
+
+<main class="container">
+
+    <!-- CABEÇALHO -->
+    <header class="header">
+        <div class="logo">
+            <span class="logo-symbol">
+                <img src="img/claude.png" alt="GO PLAY">
+            </span>
+        </div>
+
+        <div class="brand">
+            <h1>Análise Claude AI - Mega Sic Bac</h1>
+            <span>MEGA SIC V1.0</span>
+        </div>
+
+        <div class="sparkle" aria-hidden="true">✧</div>
+    </header>
+
+    <!-- AVISO DE ACESSO -->
+    <div id="accessMessage" class="access-message">
+        <span class="access-icon">ⓘ</span>
+        <div>
+            <strong id="accessTitle">NAVEGAÇÃO NÃO INICIADA</strong>
+            <p id="accessText">Digite uma URL na Central de navegação para abrir uma página.</p>
+        </div>
+    </div>
+
+   <!-- ÁREAS DE ANÁLISE -->
+<div class="analysis-grid">
+
+    <!-- PAINEL DE CORES -->
+    <section class="panel color-panel">
+
+        <div class="panel-heading section-header">
+            <div>
+               
+                <h2>
+                    <img src="img/claude.png" alt="">
+                   Análise Claude AI - Cores
+                </h2>
+                <span class="subheading">Opus 5.5</span>
+            </div>
+        </div>
+
+        <div class="warning">
+            <span class="warning-icon">ⓘ</span>
+            <p>
+                Essa é uma ferramenta de análise baseada em resultados históricos do jogo, e não deve ser considerada como sinal. A decisão de seguir a análise ou não é exclusivamente sua!
+            </p>
+        </div>
+
+        <div class="color-results">
+
+            <div class="color-card player">
+                <strong id="playerPercent">--<small>%</small></strong>
+                <span>JOGADOR</span>
+            </div>
+
+            <div class="color-card tie">
+                <strong id="tiePercent">--<small>%</small></strong>
+                <span>EMPATE</span>
+            </div>
+
+            <div class="color-card banker">
+                <strong id="bankerPercent">--<small>%</small></strong>
+                <span>BANCA</span>
+            </div>
+
+        </div>
+
+        <button class="main-button purple-button" id="colorButton" type="button">
+            <span>ϟ</span>
+            GERAR ANÁLISE
+        </button>
+
+        <div class="summary hidden" id="colorSummary">
+            <div class="summary-title">RESULTADO DA ANÁLISE</div>
+            <div class="summary-result" id="colorWinner">--</div>
+            <div class="summary-description" id="colorDescription"></div>
+        </div>
+
+        <div class="responsibility">
+            <div class="age">18+</div>
+            <div class="responsibility-content">
+                <p>Ministério da Fazenda adverte: Aposta não é investimento.</p>
+                <strong>JOGUE COM RESPONSABILIDADE.</strong>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- PAINEL DE DUPLOS -->
+    <section class="panel doubles-panel">
+
+        <div class="panel-heading section-header">
+            <div>
+                
+                <h2>
+                    <img src="img/claude.png" alt="">
+                    Análise Claude AI - Duplos
+                </h2>
+                <span class="subheading">Fable 5.2</span>
+            </div>
+            <span class="panel-status">✧</span>
+        </div>
+
+        <div class="warning">
+            <span class="warning-icon">ⓘ</span>
+            <p>
+                Essa é uma ferramenta de análise baseada em resultados históricos do jogo, e não deve ser considerada como sinal. A decisão de seguir a análise ou não é exclusivamente sua!
+            </p>
+        </div>
+
+        <!-- DADOS -->
+        <div class="dice-area" id="diceArea">
+
+            <div class="dice white-dice" data-dice="0">
+                <div class="liquid"></div>
+                <div class="dots"><i class="dot d1"></i></div>
+            </div>
+
+            <div class="dice white-dice" data-dice="1">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d2"></i>
+                    <i class="dot d4"></i>
+                </div>
+            </div>
+
+            <div class="dice white-dice" data-dice="2">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d1"></i>
+                    <i class="dot d3"></i>
+                    <i class="dot d5"></i>
+                </div>
+            </div>
+
+            <div class="dice black-dice" data-dice="3">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d1"></i>
+                    <i class="dot d2"></i>
+                    <i class="dot d4"></i>
+                    <i class="dot d5"></i>
+                </div>
+            </div>
+
+            <div class="dice black-dice" data-dice="4">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d1"></i>
+                    <i class="dot d2"></i>
+                    <i class="dot d3"></i>
+                    <i class="dot d4"></i>
+                    <i class="dot d5"></i>
+                </div>
+            </div>
+
+            <div class="dice black-dice" data-dice="5">
+                <div class="liquid"></div>
+                <div class="dots">
+                    <i class="dot d1"></i>
+                    <i class="dot d2"></i>
+                    <i class="dot d3"></i>
+                    <i class="dot d4"></i>
+                    <i class="dot d5"></i>
+                    <i class="dot d6"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SCANNER -->
+        <div class="scanner-box hidden" id="scannerBox">
+            <div class="scanner-heading">
+                <span id="scannerStatus"></span>
+            </div>
+
+            <div class="scanner-track">
+                <div class="scanner-progress" id="scannerProgress"></div>
+            </div>
+
+            <div class="scanner-message" id="scannerMessage">
+                Inicializando sistema...
+            </div>
+        </div>
+
+        <button class="main-button orange-button" id="doublesButton" type="button">
+            <span>ϟ</span>
+            GERAR ANÁLISE DE DUPLOS
+        </button>
+
+        <div id="doublesSummary"></div>
+
+        <div class="responsibility">
+            <div class="age">18+</div>
+            <div class="responsibility-content">
+                <p>Ministério da Fazenda adverte: Aposta não é investimento.</p>
+                <strong>JOGUE COM RESPONSABILIDADE.</strong>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+    <!-- CENTRAL DE NAVEGAÇÃO -->
+    <section class="browser-panel">
+
+        <div class="browser-heading">
+            <div>
+                <span class="eyebrow">NAVEGADOR INTEGRADO</span>
+                <h2>Central de navegação</h2>
+                <span>ACESSE UMA PÁGINA EXTERNA</span>
+            </div>
+
+            <span class="browser-icon">↗</span>
+        </div>
+
+        <form id="urlForm" class="url-form">
+            <input
+                type="url"
+                id="urlInput"
+                placeholder="https://exemplo.com"
+                autocomplete="url"
+                required
+            >
+            <button type="submit">ABRIR</button>
+        </form>
+
+        <div class="iframe-container">
+
+            <div class="iframe-placeholder" id="iframePlaceholder">
+                <span>◎</span>
+                <p>Sua página aparecerá aqui</p>
+                <small>Digite um endereço acima para começar.</small>
+            </div>
+
+            <iframe
+                id="siteFrame"
+                title="Navegador externo"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                allowfullscreen
+            ></iframe>
+
+        </div>
+
+        <p class="browser-note">
+            Algumas páginas bloqueiam a exibição em iframe por questões de segurança.
+            Nesses casos, abra o endereço em uma nova aba.
+        </p>
+
+    </section>
+
+    <footer>
+        GO PLAY <span>·</span> PAINEL DE ANÁLISES
+    </footer>
+
+</main>
+
+<script src="script.js"></script>
+
+</body>
+</html>

@@ -7,15 +7,12 @@
 
 const CONFIG = {
     scannerDuration: 7000,
-    colorCooldown: 10000,
-    doublesCooldown: 15000,
-
+    colorCooldown: 30000,
+    doublesCooldown: 30000,
     whiteDiceMin: 66,
     whiteDiceMax: 88,
-
     blackDiceMin: 15,
     blackDiceMax: 27,
-
     tieMax: 3
 };
 
@@ -25,15 +22,16 @@ const CONFIG = {
 
 const $ = selector => document.querySelector(selector);
 
+const accessMessage = $("#accessMessage");
+const accessTitle = $("#accessTitle");
+const accessText = $("#accessText");
+const doublesSummary = $("#doublesSummary");
 const colorButton = $("#colorButton");
 const doublesButton = $("#doublesButton");
-
 const playerPercent = $("#playerPercent");
 const tiePercent = $("#tiePercent");
 const bankerPercent = $("#bankerPercent");
-
 const colorSummary = $("#colorSummary");
-
 
 const diceArea = $("#diceArea");
 const dice = [...document.querySelectorAll(".dice")];
@@ -47,7 +45,70 @@ let colorRunning = false;
 let doublesRunning = false;
 let audioContext = null;
 
+let navigationReady = false;
+
 const cooldownTimers = new WeakMap();
+const STORAGE_KEY = "goplay_state";
+
+function loadSavedState() {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch {
+        return {};
+    }
+}
+
+function saveState(data) {
+    try {
+        const current = loadSavedState();
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+                ...current,
+                ...data
+            })
+        );
+    } catch (error) {
+        console.error("Erro ao salvar estado:", error);
+    }
+}
+
+function showAccessMessage(title, message, type = "") {
+    if (!accessMessage) return;
+
+    if (accessTitle) accessTitle.textContent = title;
+    if (accessText) accessText.textContent = message;
+
+    accessMessage.className = "access-message";
+
+    if (type) {
+        accessMessage.classList.add(type);
+    }
+}
+
+/* ==========================================
+   CONTROLE DE ACESSO DAS ANÁLISES
+========================================== */
+function updateAnalysisAccess() {
+
+    const hasUrl = Boolean(
+        urlInput &&
+        urlInput.value.trim() &&
+        siteFrame &&
+        siteFrame.src
+    );
+
+    navigationReady = hasUrl;
+
+    if (colorButton && !colorRunning) {
+        colorButton.disabled = !hasUrl;
+    }
+
+    if (doublesButton && !doublesRunning) {
+        doublesButton.disabled = !hasUrl;
+    }
+}
 
 /* ==========================================
    FUNÇÕES AUXILIARES
@@ -71,6 +132,9 @@ function startCooldown(button, duration, originalText, isRunning) {
     }
 
     const deadline = Date.now() + duration;
+    const storageKey = button.id + "_deadline";
+
+    localStorage.setItem(storageKey, String(deadline));
 
     button.disabled = true;
 
@@ -78,9 +142,18 @@ function startCooldown(button, duration, originalText, isRunning) {
         const remaining = Math.max(0, deadline - Date.now());
 
         if (remaining <= 0) {
-            button.disabled = false;
+
             button.innerHTML = originalText;
+
             cooldownTimers.delete(button);
+            localStorage.removeItem(storageKey);
+
+            if (navigationReady && !isRunning()) {
+                button.disabled = false;
+            } else {
+                button.disabled = true;
+            }
+
             return;
         }
 
@@ -121,7 +194,6 @@ async function getAudioContext() {
 async function playInterfaceSound() {
     try {
         const ctx = await getAudioContext();
-
         if (!ctx) return;
 
         const oscillator = ctx.createOscillator();
@@ -155,7 +227,6 @@ async function playInterfaceSound() {
 async function playScannerSound() {
     try {
         const ctx = await getAudioContext();
-
         if (!ctx) return;
 
         const oscillator = ctx.createOscillator();
@@ -252,19 +323,19 @@ function showColorSummary(values) {
     const description = $("#colorDescription");
 
     if (winner) {
-    winner.textContent =
-        `${options[0].name} · ${options[0].value}%`;
+        winner.textContent =
+            `${options[0].name} · ${options[0].value}%`;
 
-    winner.classList.remove("player", "banker", "tie");
+        winner.classList.remove("player", "banker", "tie");
 
-    if (options[0].name === "JOGADOR") {
-        winner.classList.add("player");
-    } else if (options[0].name === "BANCA") {
-        winner.classList.add("banker");
-    } else {
-        winner.classList.add("tie");
+        if (options[0].name === "JOGADOR") {
+            winner.classList.add("player");
+        } else if (options[0].name === "BANCA") {
+            winner.classList.add("banker");
+        } else {
+            winner.classList.add("tie");
+        }
     }
-}
 
     if (description) {
         description.textContent =
@@ -275,6 +346,8 @@ function showColorSummary(values) {
 }
 
 async function generateColorDemo() {
+
+    if (!navigationReady) return;
     if (colorRunning) return;
 
     if (
@@ -289,6 +362,7 @@ async function generateColorDemo() {
     }
 
     colorRunning = true;
+    updateAnalysisAccess();
 
     startCooldown(
         colorButton,
@@ -329,6 +403,7 @@ async function generateColorDemo() {
 
     } finally {
         colorRunning = false;
+        updateAnalysisAccess();
     }
 }
 
@@ -427,6 +502,8 @@ function fillDice() {
 ========================================== */
 
 async function generateDoublesDemo() {
+
+    if (!navigationReady) return;
     if (doublesRunning) return;
 
     if (!doublesButton || !diceArea || !doublesSummary) {
@@ -435,6 +512,7 @@ async function generateDoublesDemo() {
     }
 
     doublesRunning = true;
+    updateAnalysisAccess();
 
     startCooldown(
         doublesButton,
@@ -449,13 +527,11 @@ async function generateDoublesDemo() {
         doublesSummary.classList.add("hidden");
 
         resetDice();
-
         startDiceScanner();
 
         await sleep(CONFIG.scannerDuration);
 
         stopDiceScanner();
-
         fillDice();
 
         playScannerSound();
@@ -469,7 +545,9 @@ async function generateDoublesDemo() {
 
     } finally {
         stopDiceScanner();
+
         doublesRunning = false;
+        updateAnalysisAccess();
     }
 }
 
@@ -482,30 +560,95 @@ doublesButton?.addEventListener(
    CENTRAL DE NAVEGAÇÃO / IFRAME
 ========================================== */
 
-urlForm?.addEventListener("submit", event => {
+/* ==========================================
+   CENTRAL DE NAVEGAÇÃO / IFRAME
+========================================== */
+
+urlInput?.addEventListener("input", () => {
+
+    navigationReady = false;
+
+    updateAnalysisAccess();
+
+    if (siteFrame) {
+        siteFrame.onload = null;
+        siteFrame.onerror = null;
+        siteFrame.removeAttribute("src");
+        siteFrame.style.display = "none";
+    }
+
+    if (iframePlaceholder) {
+        iframePlaceholder.style.display = "flex";
+    }
+});
+
+urlForm?.addEventListener("submit", (event) => {
+
     event.preventDefault();
 
     let address = urlInput?.value.trim();
 
-    if (!address) return;
+    if (!address) {
+        showAccessMessage(
+            "ENDEREÇO INVÁLIDO",
+            "Digite um endereço para continuar.",
+            "error"
+        );
+        return;
+    }
 
     try {
+
         if (!/^https?:\/\//i.test(address)) {
             address = "https://" + address;
         }
 
         const parsed = new URL(address);
 
-        if (
-            parsed.protocol !== "https:" &&
-            parsed.protocol !== "http:"
-        ) {
-            throw new Error("Endereço inválido.");
+        if (!["https:", "http:"].includes(parsed.protocol)) {
+            throw new Error("Protocolo inválido.");
         }
 
         if (!siteFrame) {
             throw new Error("Iframe não encontrado.");
         }
+
+        navigationReady = false;
+        updateAnalysisAccess();
+
+        showAccessMessage(
+            "CARREGANDO PÁGINA",
+            "Aguarde enquanto a página é aberta."
+        );
+
+        siteFrame.onload = () => {
+
+            navigationReady = true;
+            updateAnalysisAccess();
+
+            showAccessMessage(
+                "NAVEGAÇÃO INICIADA",
+                "A página foi carregada no navegador.",
+                "success"
+            );
+
+            saveState({
+                lastUrl: parsed.href,
+                lastUrlOpened: true
+            });
+        };
+
+        siteFrame.onerror = () => {
+
+            navigationReady = false;
+            updateAnalysisAccess();
+
+            showAccessMessage(
+                "ERRO DE CARREGAMENTO",
+                "Não foi possível carregar a página.",
+                "error"
+            );
+        };
 
         siteFrame.src = parsed.href;
         siteFrame.style.display = "block";
@@ -515,8 +658,17 @@ urlForm?.addEventListener("submit", event => {
         }
 
     } catch (error) {
-        console.error("Erro no endereço:", error);
-        alert("Digite um endereço válido.");
+
+        navigationReady = false;
+        updateAnalysisAccess();
+
+        showAccessMessage(
+            "ENDEREÇO INVÁLIDO",
+            "Verifique o endereço digitado.",
+            "error"
+        );
+
+        console.error(error);
     }
 });
 
@@ -525,5 +677,7 @@ urlForm?.addEventListener("submit", event => {
 ========================================== */
 
 resetDice();
+
+updateAnalysisAccess();
 
 console.log("MEGA SIC - Interface inicializada.");

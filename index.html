@@ -1,263 +1,290 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#030906">
 
-    <title>GO PLAY | Painel de Análises</title>
-
-    <meta name="application-name" content="GO PLAY">
-    <meta name="apple-mobile-web-app-title" content="GO PLAY">
-    <meta name="description" content="GO PLAY - Painel de análises demonstrativas.">
-
-    <link rel="manifest" href="manifest.json">
+    <title>GO PLAY | Acesso</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="dados.png" type="image/png">
+    <link rel="stylesheet" href="login.css">
+    <link rel="shortcut icon" href="dados.png" type="image/x-icon">
 </head>
 
 <body>
 
-<main class="container">
+    <main class="page">
 
-    <header class="header">
-        <div class="logo">
-            <span class="logo-symbol"><img src="img/claude.png" alt=""></span>
-        </div>
+        <!-- LADO ESQUERDO: LOGIN -->
+        <section class="login-side">
 
-        <div class="brand">
-            <h1>Análise Claude AI - Mega Sic Bac</h1>
-            <span>MEGA SIC V1.0</span>
-        </div>
+            <div class="login-content">
 
-        <div class="sparkle">✧</div>
-    </header>
+                <header class="brand">
+                    <div class="brand-symbol">G</div>
 
-    <!-- PAINEL DE CORES -->
-    <section class="panel">
+                    <div class="brand-text">
+                        <h1>GO <span>PLAY</span></h1>
+                        <p>SUA EXPERIÊNCIA COMEÇA AQUI</p>
+                    </div>
+                </header>
 
-        <div class="warning">
-            <span class="warning-icon">ⓘ</span>
-            <p>
-                Essa é uma ferramenta de análise  baseada
-                em resultados historicos do jogo , e não deve ser considerada como sinal.
-                A decisão de seguir a analise ou não e exclusivamente sua!
-            </p>
-        </div>
+                <div class="auth-box">
 
-        <div class="color-results">
+                    <div class="tabs">
+                        <button type="button" id="loginTab" class="tab active">
+                            <span class="tab-icon">↪</span>
+                            Entrar
+                        </button>
 
-            <div class="color-card player">
-                <strong id="playerPercent">--<small>%</small></strong>
-                <span>JOGADOR</span>
-            </div>
+                        <button type="button" id="registerTab" class="tab">
+                            <span class="tab-icon">＋</span>
+                            Criar conta
+                        </button>
+                    </div>
 
-            <div class="color-card tie">
-                <strong id="tiePercent">--<small>%</small></strong>
-                <span>EMPATE</span>
-            </div>
+                    <!-- LOGIN -->
+                    <form id="loginForm">
 
-            <div class="color-card banker">
-                <strong id="bankerPercent">--<small>%</small></strong>
-                <span>BANCA</span>
-            </div>
+                        <div class="form-heading">
+                            <span class="eyebrow">ACESSO À PLATAFORMA</span>
+                            <h2>Bem-vindo de volta!</h2>
+                            <p>Entre na sua conta para continuar.</p>
+                        </div>
 
-        </div>
+                        <div class="field">
+                            <label for="loginUser">Usuário</label>
 
-        <button class="main-button purple-button" id="colorButton">
-            <span>ϟ</span>
-            GERAR ANÁLISE
-        </button>
+                            <div class="input-wrap">
+                                <span class="input-icon">♙</span>
+                                <input
+                                    id="loginUser"
+                                    type="text"
+                                    placeholder="Digite seu usuário"
+                                    autocomplete="username"
+                                    required
+                                >
+                            </div>
+                        </div>
 
-        <div class="summary hidden" id="colorSummary">
-            <div class="summary-title">RESULTADO DA ANALISE</div>
-            <div class="summary-result" id="colorWinner">--</div>
-            <div class="summary-description" id="colorDescription">
-                Percentual demonstrativo mais alto.
-            </div>
-        </div>
+                        <div class="field">
+                            <label for="loginPassword">Senha</label>
 
-        <div class="responsibility">
-            <div class="age">18+</div>
-            <div class="responsibility-content">
-                <p>Ministério da Fazenda adverte: Aposta não é investimento.</p>
-                <strong>JOGUE COM RESPONSABILIDADE.</strong>
-            </div>
-        </div>
+                            <div class="input-wrap">
+                                <span class="input-icon">▣</span>
+                                <input
+                                    id="loginPassword"
+                                    type="password"
+                                    placeholder="Digite sua senha"
+                                    autocomplete="current-password"
+                                    required
+                                >
+                            </div>
+                        </div>
 
-    </section>
+                        <button class="submit-button" type="submit">
+                            <span>ENTRAR NA CONTA</span>
+                            <span class="button-arrow">→</span>
+                        </button>
 
-    <!-- PAINEL DE DUPLOS -->
-    <section class="panel doubles-panel">
+                        <div class="form-message" id="message"></div>
 
-        <header class="section-header">
-            <h2> <img src="img/claude.png" alt="">Análise Claude AI - Duplos | Mega Sic Bac</h2>
-            <span>MEGA SIC V1.0</span>
-        </header>
+                        <div class="or-divider">
+                            <span></span>
+                            <small>ACESSO GO PLAY</small>
+                            <span></span>
+                        </div>
 
-        <div class="warning">
-            <span class="warning-icon">ⓘ</span>
-             <p>
-                Essa é uma ferramenta de análise  baseada
-                em resultados historicos do jogo , e não deve ser considerada como sinal.
-                A decisão de seguir a analise ou não e exclusivamente sua!
-            </p>
-        </div>
+                        <p class="switch-text">
+                            Ainda não tem uma conta?
+                            <button type="button" id="createAccountLink">
+                                Crie agora →
+                            </button>
+                        </p>
 
-        <div class="dice-area" id="diceArea">
+                    </form>
 
-            <div class="dice white-dice" data-dice="0">
-                <div class="liquid"></div>
-                <div class="dots">
-                    <i class="dot d1"></i>
+                    <!-- CADASTRO -->
+                    <form id="registerForm" class="hidden">
+
+                        <div class="form-heading">
+                            <span class="eyebrow">NOVO CADASTRO</span>
+                            <h2>Crie sua conta</h2>
+                            <p>Preencha os dados para começar.</p>
+                        </div>
+
+                        <div class="field">
+                            <label for="registerUser">Usuário</label>
+
+                            <div class="input-wrap">
+                                <span class="input-icon">♙</span>
+                                <input
+                                    id="registerUser"
+                                    type="text"
+                                    placeholder="Escolha um usuário"
+                                    autocomplete="username"
+                                    minlength="3"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="registerPassword">Senha</label>
+
+                            <div class="input-wrap">
+                                <span class="input-icon">▣</span>
+                                <input
+                                    id="registerPassword"
+                                    type="password"
+                                    placeholder="Crie uma senha"
+                                    autocomplete="new-password"
+                                    minlength="6"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="confirmPassword">Confirmar senha</label>
+
+                            <div class="input-wrap">
+                                <span class="input-icon">▣</span>
+                                <input
+                                    id="confirmPassword"
+                                    type="password"
+                                    placeholder="Repita sua senha"
+                                    autocomplete="new-password"
+                                    minlength="6"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <button class="submit-button" type="submit">
+                            <span>CRIAR MINHA CONTA</span>
+                            <span class="button-arrow">→</span>
+                        </button>
+
+                        <div class="form-message" id="registerMessage"></div>
+
+                        <p class="switch-text register-switch">
+                            Já possui uma conta?
+                            <button type="button" id="backToLogin">
+                                Entrar →
+                            </button>
+                        </p>
+
+                    </form>
+
+                    <div class="security-note">
+                        <span class="security-icon">✓</span>
+                        Seus dados estão protegidos neste navegador
+                    </div>
+
                 </div>
+
             </div>
 
-            <div class="dice white-dice" data-dice="1">
-                <div class="liquid"></div>
-                <div class="dots">
-                    <i class="dot d2"></i>
-                    <i class="dot d4"></i>
+            <footer class="login-footer">
+                <span>GO PLAY © 2026</span>
+                <span> TODOS OS DIREITOS RESERVADOS</span>
+            </footer>
+
+        </section>
+
+        <!-- LADO DIREITO: IDENTIDADE VISUAL -->
+        <section class="visual-side">
+
+            <div class="visual-top">
+                <span class="status-dot"></span>
+                SISTEMA GO PLAY
+            </div>
+
+            <div class="visual-content">
+
+                <div class="visual-label">
+                    ANÁLISES E EXPERIÊNCIA
+                    <span>EM UM SÓ LUGAR</span>
                 </div>
-            </div>
 
-            <div class="dice white-dice" data-dice="2">
-                <div class="liquid"></div>
-                <div class="dots">
-                    <i class="dot d1"></i>
-                    <i class="dot d3"></i>
-                    <i class="dot d5"></i>
+                <div class="visual-art">
+
+                    <div class="orbit orbit-one"></div>
+                    <div class="orbit orbit-two"></div>
+                    <div class="orbit orbit-three"></div>
+
+                    <div class="glow"></div>
+
+                    <div class="platform platform-back"></div>
+                    <div class="platform platform-front"></div>
+
+                    <div class="floating-card">
+                        <div class="floating-logo">G</div>
+                        <div class="floating-reflection"></div>
+                    </div>
+
+                    <div class="floating-particle particle-one"></div>
+                    <div class="floating-particle particle-two"></div>
+                    <div class="floating-particle particle-three"></div>
+                    <div class="floating-particle particle-four"></div>
+
                 </div>
-            </div>
 
-            <div class="dice black-dice" data-dice="3">
-                <div class="liquid"></div>
-                <div class="dots">
-                    <i class="dot d1"></i>
-                    <i class="dot d2"></i>
-                    <i class="dot d4"></i>
-                    <i class="dot d5"></i>
+                <div class="visual-copy">
+                    <h2>Uma nova experiência.</h2>
+                    <h3>Um novo jeito de explorar.</h3>
+                    <p>
+                        Acesse seu ambiente GO PLAY com uma interface
+                        moderna, organizada e intuitiva.
+                    </p>
                 </div>
-            </div>
 
-            <div class="dice black-dice" data-dice="4">
-                <div class="liquid"></div>
-                <div class="dots">
-                    <i class="dot d1"></i>
-                    <i class="dot d2"></i>
-                    <i class="dot d3"></i>
-                    <i class="dot d4"></i>
-                    <i class="dot d5"></i>
+                <div class="feature-list">
+
+                    <div class="feature">
+                        <span class="feature-icon">⚡</span>
+                        <div>
+                            <strong>ACESSO</strong>
+                            <small>Rápido</small>
+                        </div>
+                    </div>
+
+                    <div class="feature">
+                        <span class="feature-icon">◇</span>
+                        <div>
+                            <strong>INTERFACE</strong>
+                            <small>Moderna</small>
+                        </div>
+                    </div>
+
+                    <div class="feature">
+                        <span class="feature-icon">▥</span>
+                        <div>
+                            <strong>AMBIENTE</strong>
+                            <small>Organizado</small>
+                        </div>
+                    </div>
+
                 </div>
+
             </div>
 
-            <div class="dice black-dice" data-dice="5">
-                <div class="liquid"></div>
-                <div class="dots">
-                    <i class="dot d1"></i>
-                    <i class="dot d2"></i>
-                    <i class="dot d3"></i>
-                    <i class="dot d4"></i>
-                    <i class="dot d5"></i>
-                    <i class="dot d6"></i>
-                </div>
+            <div class="visual-bottom">
+                <span>GO PLAY</span>
+                <span>TECNOLOGIA • EXPERIÊNCIA • INOVAÇÃO</span>
             </div>
 
-        </div>
+        </section>
 
-        <div class="scanner-box hidden" id="scannerBox">
-            <div class="scanner-heading">
-                
-                <span  id="scannerStatus"></span>
-            </div>
+    </main>
 
-            <div class="scanner-track">
-                <div class="scanner-progress" id="scannerProgress"></div>
-            </div>
+    <script src="login.js"></script>
 
-            <div class="scanner-message" id="scannerMessage">
-                Inicializando sistema...
-            </div>
-        </div>
-
-        <button class="main-button orange-button" id="doublesButton">
-            <span>ϟ</span>
-            GERAR ANÁLISE DE DUPLOS
-        </button>
-
-        <div  id="doublesSummary">
-            
-        </div>
-
-        <div class="responsibility">
-            <div class="age">18+</div>
-            <div class="responsibility-content">
-                <p>Ministério da Fazenda adverte: Aposta não é investimento.</p>
-                <strong>JOGUE COM RESPONSABILIDADE.</strong>
-            </div>
-        </div>
-
-    </section>
-
-    <!-- NAVEGADOR -->
-    <section class="browser-panel">
-
-        <div class="browser-heading">
-            <div>
-                <h2>Central de navegação</h2>
-                <span>ACESSE UMA PÁGINA EXTERNA</span>
-            </div>
-            <span class="browser-icon">↗</span>
-        </div>
-
-        <form id="urlForm" class="url-form">
-            <input
-                type="url"
-                id="urlInput"
-                placeholder="https://exemplo.com"
-                autocomplete="url"
-                required
-            >
-            <button type="submit">ABRIR</button>
-        </form>
-
-        <div class="iframe-container">
-            <div class="iframe-placeholder" id="iframePlaceholder">
-                <span>◎</span>
-                <p>Sua página aparecerá aqui</p>
-                <small>Digite um endereço acima para começar.</small>
-            </div>
-
-            <iframe
-                id="siteFrame"
-                title="Navegador externo"
-                loading="lazy"
-                referrerpolicy="no-referrer"
-                allowfullscreen
-            ></iframe>
-        </div>
-
-        <p class="browser-note">
-            Algumas páginas bloqueiam a exibição em iframe por questões
-            de segurança. Nesses casos, abra o endereço em uma nova aba.
-        </p>
-
-    </section>
-
-    <footer>
-        GO PLAY · PAINEL 
-    </footer>
-
-</main>
-
-<script src="script.js"></script>
 </body>
 </html>

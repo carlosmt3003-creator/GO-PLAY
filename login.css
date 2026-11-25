@@ -1,0 +1,792 @@
+
+:root {
+    --background: #030906;
+    --panel: #080f0b;
+    --panel-light: #0b1710;
+    --border: #1b3025;
+    --text: #f1f5f2;
+    --muted: #87958c;
+    --green: #13c985;
+    --green-light: #35e6a1;
+    --green-dark: #08794d;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    font-family: "Inter", Arial, sans-serif;
+    color: var(--text);
+    background: var(--background);
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(440px, 0.92fr) minmax(0, 1.08fr);
+}
+
+/* =====================================
+   LADO DO LOGIN
+===================================== */
+
+.login-side {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 45px clamp(30px, 6vw, 100px);
+    background:
+        radial-gradient(ellipse at 20% 0%, #0d291a 0%, transparent 45%),
+        #040a06;
+    border-right: 1px solid rgba(44, 105, 70, 0.25);
+    position: relative;
+    z-index: 2;
+}
+
+.login-content {
+    width: 100%;
+    max-width: 470px;
+    margin: auto;
+}
+
+/* MARCA */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 48px;
+}
+
+.brand-symbol {
+    width: 57px;
+    height: 57px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #35e6a1, #07864f);
+    color: #03130b;
+    font-size: 35px;
+    font-weight: 900;
+    box-shadow: 0 0 30px rgba(19, 201, 133, 0.18);
+}
+
+.brand-text h1 {
+    font-size: 29px;
+    font-weight: 900;
+    letter-spacing: 3px;
+}
+
+.brand-text h1 span {
+    color: var(--green);
+}
+
+.brand-text p {
+    margin-top: 6px;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2px;
+}
+
+/* FORMULÁRIO */
+
+.auth-box {
+    width: 100%;
+}
+
+.tabs {
+    display: flex;
+    padding: 5px;
+    margin-bottom: 38px;
+    background: #050b07;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+}
+
+.tab {
+    flex: 1;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    transition: 0.25s;
+}
+
+.tab:hover {
+    color: white;
+}
+
+.tab.active {
+    color: #03130b;
+    background: linear-gradient(135deg, #35e6a1, #13c985);
+    box-shadow: 0 5px 18px rgba(19, 201, 133, 0.16);
+}
+
+.tab-icon {
+    font-size: 19px;
+}
+
+.form-heading {
+    margin-bottom: 28px;
+}
+
+.eyebrow {
+    display: block;
+    margin-bottom: 12px;
+    color: var(--green);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.form-heading h2 {
+    font-size: clamp(23px, 2.1vw, 29px);
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.form-heading p {
+    margin-top: 9px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* CAMPOS */
+
+.field {
+    margin-top: 19px;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 9px;
+    color: #c7d3ca;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.input-wrap {
+    height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 15px;
+    background: rgba(3, 10, 6, 0.75);
+    border: 1px solid #1d3327;
+    border-radius: 10px;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+.input-wrap:focus-within {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(19, 201, 133, 0.08);
+}
+
+.input-icon {
+    color: #82958a;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.input-wrap input {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: white;
+    font-size: 13px;
+}
+
+.input-wrap input::placeholder {
+    color: #647168;
+}
+
+/* BOTÃO */
+
+.submit-button {
+    width: 100%;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 27px;
+    border: 0;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #35e6a1, #13c985 55%, #07945d);
+    color: #03130b;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 25px rgba(19, 201, 133, 0.15);
+    transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
+}
+
+.submit-button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+    box-shadow: 0 12px 30px rgba(19, 201, 133, 0.23);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+}
+
+.button-arrow {
+    font-size: 20px;
+}
+
+/* MENSAGEM */
+
+.form-message {
+    min-height: 19px;
+    margin-top: 13px;
+    color: var(--green-light);
+    font-size: 12px;
+    text-align: center;
+}
+
+.form-message.error {
+    color: #ed6278;
+}
+
+/* DIVISOR */
+
+.or-divider {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin: 19px 0;
+}
+
+.or-divider span {
+    flex: 1;
+    height: 1px;
+    background: #1d3025;
+}
+
+.or-divider small {
+    color: #718078;
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+/* ALTERNAR LOGIN E CADASTRO */
+
+.switch-text {
+    color: #a6b3aa;
+    text-align: center;
+    font-size: 12px;
+}
+
+.switch-text button {
+    margin-left: 5px;
+    border: 0;
+    background: transparent;
+    color: var(--green-light);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.switch-text button:hover {
+    text-decoration: underline;
+}
+
+.register-switch {
+    margin-top: 22px;
+}
+
+/* SEGURANÇA */
+
+.security-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 30px;
+    color: #91a198;
+    font-size: 11px;
+}
+
+.security-icon {
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(19, 201, 133, 0.14);
+    color: var(--green-light);
+    font-weight: 900;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* RODAPÉ */
+
+.login-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+    padding-top: 35px;
+    color: #59665e;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-align: center;
+}
+
+/* =====================================
+   LADO VISUAL
+===================================== */
+
+.visual-side {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    padding: 38px clamp(28px, 5vw, 75px);
+    background:
+        radial-gradient(ellipse at 50% 43%, rgba(10, 111, 63, 0.25), transparent 45%),
+        radial-gradient(ellipse at 90% 100%, rgba(8, 80, 48, 0.2), transparent 45%),
+        #020805;
+}
+
+.visual-side::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image:
+        linear-gradient(rgba(19, 201, 133, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(19, 201, 133, 0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+.visual-top,
+.visual-bottom,
+.visual-content {
+    position: relative;
+    z-index: 1;
+}
+
+.visual-top {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #a4b3a9;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green);
+}
+
+.visual-content {
+    width: 100%;
+    max-width: 680px;
+    margin: auto;
+    text-align: center;
+}
+
+.visual-label {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 5px;
+    color: #d7e4da;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.visual-label span {
+    color: var(--green);
+}
+
+/* ILUSTRAÇÃO CSS */
+
+.visual-art {
+    height: clamp(270px, 38vw, 430px);
+    position: relative;
+    display: grid;
+    place-items: center;
+    perspective: 900px;
+}
+
+.glow {
+    position: absolute;
+    width: 65%;
+    height: 55%;
+    border-radius: 50%;
+    background: rgba(0, 222, 125, 0.16);
+    filter: blur(65px);
+}
+
+.orbit {
+    position: absolute;
+    width: 78%;
+    height: 32%;
+    border: 1px solid rgba(19, 201, 133, 0.7);
+    border-radius: 50%;
+    transform: rotate(-17deg);
+    box-shadow: 0 0 18px rgba(19, 201, 133, 0.1);
+}
+
+.orbit-one {
+    animation: orbitMove 9s linear infinite;
+}
+
+.orbit-two {
+    width: 65%;
+    height: 44%;
+    border-color: rgba(19, 201, 133, 0.25);
+    transform: rotate(35deg);
+}
+
+.orbit-three {
+    width: 88%;
+    height: 24%;
+    border-color: rgba(19, 201, 133, 0.18);
+    transform: rotate(5deg);
+}
+
+.platform {
+    position: absolute;
+    bottom: 13%;
+    width: 65%;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(19, 201, 133, 0.7);
+    background: linear-gradient(180deg, #0a3321, #031009);
+    box-shadow:
+        0 0 20px rgba(19, 201, 133, 0.3),
+        inset 0 0 15px rgba(19, 201, 133, 0.2);
+}
+
+.platform-back {
+    bottom: 19%;
+    width: 52%;
+    height: 35px;
+    opacity: 0.6;
+}
+
+.platform-front {
+    transform: perspective(400px) rotateX(15deg);
+}
+
+.floating-card {
+    width: clamp(145px, 19vw, 220px);
+    height: clamp(145px, 19vw, 220px);
+    position: relative;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(85, 255, 178, 0.75);
+    border-radius: 35px;
+    background: linear-gradient(145deg, rgba(18, 93, 57, 0.8), rgba(2, 17, 9, 0.94));
+    box-shadow:
+        0 0 30px rgba(19, 201, 133, 0.2),
+        inset 0 0 30px rgba(19, 201, 133, 0.12);
+    transform: rotate(-12deg) rotateY(-12deg);
+    animation: floating 5s ease-in-out infinite;
+}
+
+.floating-card::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border: 1px solid rgba(91, 255, 178, 0.15);
+    border-radius: 27px;
+}
+
+.floating-logo {
+    color: var(--green-light);
+    font-size: clamp(90px, 12vw, 145px);
+    font-weight: 900;
+    font-style: italic;
+    text-shadow:
+        0 0 15px rgba(19, 201, 133, 0.8),
+        0 0 45px rgba(19, 201, 133, 0.45);
+}
+
+.floating-reflection {
+    position: absolute;
+    top: 0;
+    left: 15%;
+    width: 35%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.035);
+    filter: blur(12px);
+}
+
+.floating-particle {
+    width: 9px;
+    height: 9px;
+    position: absolute;
+    border: 1px solid var(--green-light);
+    background: rgba(19, 201, 133, 0.25);
+    box-shadow: 0 0 15px var(--green);
+    transform: rotate(45deg);
+}
+
+.particle-one {
+    top: 20%;
+    left: 17%;
+}
+
+.particle-two {
+    top: 27%;
+    right: 14%;
+    width: 13px;
+    height: 13px;
+}
+
+.particle-three {
+    bottom: 28%;
+    left: 11%;
+    width: 6px;
+    height: 6px;
+}
+
+.particle-four {
+    bottom: 32%;
+    right: 18%;
+    width: 7px;
+    height: 7px;
+}
+
+@keyframes floating {
+    0%, 100% {
+        transform: translateY(0) rotate(-12deg) rotateY(-12deg);
+    }
+
+    50% {
+        transform: translateY(-15px) rotate(-9deg) rotateY(-8deg);
+    }
+}
+
+@keyframes orbitMove {
+    from {
+        transform: rotate(-17deg);
+    }
+
+    to {
+        transform: rotate(343deg);
+    }
+}
+
+/* TEXTO VISUAL */
+
+.visual-copy {
+    margin-top: -5px;
+}
+
+.visual-copy h2 {
+    font-size: clamp(21px, 2.3vw, 30px);
+    font-weight: 800;
+}
+
+.visual-copy h3 {
+    margin-top: 5px;
+    color: var(--green);
+    font-size: clamp(19px, 2.2vw, 27px);
+    font-weight: 800;
+}
+
+.visual-copy p {
+    max-width: 430px;
+    margin: 15px auto 0;
+    color: #87978d;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+/* RECURSOS */
+
+.feature-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 35px;
+    border: 1px solid rgba(19, 201, 133, 0.2);
+    border-radius: 13px;
+    background: rgba(4, 15, 8, 0.55);
+}
+
+.feature {
+    min-height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+.feature + .feature {
+    border-left: 1px solid rgba(19, 201, 133, 0.16);
+}
+
+.feature-icon {
+    color: var(--green);
+    font-size: 25px;
+}
+
+.feature div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+}
+
+.feature strong {
+    color: #dce8df;
+    font-size: 9px;
+    letter-spacing: 0.7px;
+}
+
+.feature small {
+    color: #84948a;
+    font-size: 10px;
+}
+
+/* RODAPÉ VISUAL */
+
+.visual-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    color: #607268;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+}
+
+/* =====================================
+   RESPONSIVIDADE
+===================================== */
+
+@media (min-width: 1500px) {
+    .login-side {
+        padding-left: 9%;
+        padding-right: 9%;
+    }
+}
+
+@media (max-width: 1050px) {
+    .page {
+        grid-template-columns: minmax(390px, 1fr) minmax(0, 0.9fr);
+    }
+
+    .login-side {
+        padding: 35px 28px;
+    }
+
+    .visual-side {
+        padding: 30px 25px;
+    }
+
+    .feature {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .feature div {
+        text-align: center;
+    }
+}
+
+@media (max-width: 760px) {
+    .page {
+        display: block;
+    }
+
+    .login-side {
+        min-height: 100vh;
+        padding: 30px 22px;
+    }
+
+    .login-content {
+        max-width: 440px;
+    }
+
+    .brand {
+        margin-bottom: 35px;
+    }
+
+    .visual-side {
+        display: none;
+    }
+
+    .login-footer {
+        padding-top: 35px;
+    }
+}
+
+@media (max-width: 390px) {
+    .login-side {
+        padding: 25px 17px;
+    }
+
+    .brand-symbol {
+        width: 49px;
+        height: 49px;
+    }
+
+    .brand-text h1 {
+        font-size: 25px;
+    }
+
+    .form-heading h2 {
+        font-size: 23px;
+    }
+
+    .tabs {
+        margin-bottom: 30px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
