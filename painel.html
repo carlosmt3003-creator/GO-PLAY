@@ -232,30 +232,35 @@
 
 </div>
 
-    <!-- CENTRAL DE NAVEGAÇÃO -->
-    <section class="browser-panel">
+   <!-- CENTRAL DE NAVEGAÇÃO -->
+<section class="browser-panel">
 
-        <div class="browser-heading">
-            <div>
-                <span class="eyebrow">NAVEGADOR INTEGRADO</span>
-                <h2>Central de navegação</h2>
-                <span>ACESSE UMA PÁGINA EXTERNA</span>
-            </div>
-
-            <span class="browser-icon">↗</span>
+    <div class="browser-heading">
+        <div>
+            <span class="eyebrow">NAVEGADOR INTEGRADO</span>
+            <h2>Central de navegação</h2>
+            <span>ACESSE UMA PÁGINA EXTERNA</span>
         </div>
 
-        <form id="urlForm" class="url-form">
-            <input
-                type="url"
-                id="urlInput"
-                placeholder="https://exemplo.com"
-                autocomplete="url"
-                required
-            >
-            <button type="submit">ABRIR</button>
-        </form>
+        <span class="browser-icon">↗</span>
+    </div>
 
+    <form id="urlForm" class="url-form">
+        <input
+            type="url"
+            id="urlInput"
+            placeholder="https://exemplo.com"
+            autocomplete="url"
+            required
+        >
+
+        <button type="submit">ABRIR</button>
+    </form>
+
+    <!-- IFRAME COM ALÇA LATERAL -->
+    <div class="iframe-stage" id="iframeStage">
+
+        <!-- PAINEL DO IFRAME -->
         <div class="iframe-container">
 
             <div class="iframe-placeholder" id="iframePlaceholder">
@@ -274,12 +279,25 @@
 
         </div>
 
-        <p class="browser-note">
-            Algumas páginas bloqueiam a exibição em iframe por questões de segurança.
-            Nesses casos, abra o endereço em uma nova aba.
-        </p>
+        <!-- ALÇA DE ARRASTE -->
+        <button
+            type="button"
+            class="iframe-drag-handle"
+            id="iframeDragHandle"
+            aria-label="Arraste para reposicionar o navegador"
+            title="Arraste para movimentar o painel"
+        >
+            <span class="drag-label">— — arraste aqui — —</span>
+        </button>
 
-    </section>
+    </div>
+
+    <p class="browser-note">
+        Algumas páginas bloqueiam a exibição em iframe por questões de segurança.
+        Nesses casos, abra o endereço em uma nova aba.
+    </p>
+
+</section>
 
     <footer>
         GO PLAY <span>·</span> PAINEL DE ANÁLISES
