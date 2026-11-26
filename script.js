@@ -44,11 +44,30 @@ const iframePlaceholder = $("#iframePlaceholder");
 let colorRunning = false;
 let doublesRunning = false;
 let audioContext = null;
-
 let navigationReady = false;
 
-const cooldownTimers = new WeakMap();
 const STORAGE_KEY = "goplay_state";
+
+const cooldowns = {
+    colors: {
+        deadline: 0,
+        timer: null,
+        button: colorButton,
+        duration: CONFIG.colorCooldown,
+        originalText: "ϟ GERAR ANÁLISE"
+    },
+    doubles: {
+        deadline: 0,
+        timer: null,
+        button: doublesButton,
+        duration: CONFIG.doublesCooldown,
+        originalText: "ϟ GERAR ANÁLISE DE DUPLOS"
+    }
+};
+
+/* ==========================================
+   ESTADO SALVO
+========================================== */
 
 function loadSavedState() {
     try {
@@ -74,6 +93,72 @@ function saveState(data) {
     }
 }
 
+/* ==========================================
+   CONTROLE DOS COOLDOWNS
+========================================== */
+
+function getCooldownRemaining(type) {
+    const cooldown = cooldowns[type];
+
+    if (!cooldown) return 0;
+
+    return Math.max(0, cooldown.deadline - Date.now());
+}
+
+function isCooldownActive(type) {
+    return getCooldownRemaining(type) > 0;
+}
+
+function startCooldown(type) {
+    const cooldown = cooldowns[type];
+
+    if (!cooldown || !cooldown.button) return;
+
+    if (cooldown.timer) {
+        clearInterval(cooldown.timer);
+    }
+
+    cooldown.deadline = Date.now() + cooldown.duration;
+
+    cooldown.button.disabled = true;
+
+    function update() {
+        const remaining = getCooldownRemaining(type);
+
+        if (remaining <= 0) {
+            clearInterval(cooldown.timer);
+            cooldown.timer = null;
+            cooldown.deadline = 0;
+
+            cooldown.button.innerHTML = cooldown.originalText;
+
+            updateAnalysisAccess();
+            return;
+        }
+
+        const seconds = Math.ceil(remaining / 1000);
+
+        if (
+            type === "colors" && colorRunning ||
+            type === "doubles" && doublesRunning
+        ) {
+            cooldown.button.innerHTML = "ϟ ANALISANDO...";
+        } else {
+            cooldown.button.innerHTML = `ϟ AGUARDE ${seconds}s`;
+        }
+
+        cooldown.button.disabled = true;
+    }
+
+    update();
+
+    cooldown.timer = setInterval(update, 200);
+}
+
+/* ==========================================
+   MENSAGENS
+========================================== */
+
 function showAccessMessage(title, message, type = "") {
     if (!accessMessage) return;
 
@@ -88,8 +173,9 @@ function showAccessMessage(title, message, type = "") {
 }
 
 /* ==========================================
-   CONTROLE DE ACESSO DAS ANÁLISES
+   CONTROLE DE ACESSO
 ========================================== */
+
 function updateAnalysisAccess() {
 
     const hasUrl = Boolean(
@@ -99,14 +185,20 @@ function updateAnalysisAccess() {
         siteFrame.src
     );
 
-    navigationReady = hasUrl;
+    const canUseAnalysis = navigationReady && hasUrl;
 
-    if (colorButton && !colorRunning) {
-        colorButton.disabled = !hasUrl;
+    if (colorButton) {
+        colorButton.disabled =
+            !canUseAnalysis ||
+            colorRunning ||
+            isCooldownActive("colors");
     }
 
-    if (doublesButton && !doublesRunning) {
-        doublesButton.disabled = !hasUrl;
+    if (doublesButton) {
+        doublesButton.disabled =
+            !canUseAnalysis ||
+            doublesRunning ||
+            isCooldownActive("doubles");
     }
 }
 
@@ -120,55 +212,6 @@ function randomInt(min, max) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function startCooldown(button, duration, originalText, isRunning) {
-    if (!button) return;
-
-    const previousTimer = cooldownTimers.get(button);
-
-    if (previousTimer) {
-        clearTimeout(previousTimer);
-    }
-
-    const deadline = Date.now() + duration;
-    const storageKey = button.id + "_deadline";
-
-    localStorage.setItem(storageKey, String(deadline));
-
-    button.disabled = true;
-
-    function updateCooldown() {
-        const remaining = Math.max(0, deadline - Date.now());
-
-        if (remaining <= 0) {
-
-            button.innerHTML = originalText;
-
-            cooldownTimers.delete(button);
-            localStorage.removeItem(storageKey);
-
-            if (navigationReady && !isRunning()) {
-                button.disabled = false;
-            } else {
-                button.disabled = true;
-            }
-
-            return;
-        }
-
-        if (isRunning()) {
-            button.innerHTML = "ϟ ANALISANDO...";
-        } else {
-            const seconds = Math.ceil(remaining / 1000);
-            button.innerHTML = `ϟ AGUARDE ${seconds}s`;
-        }
-
-        const timer = setTimeout(updateCooldown, 200);
-        cooldownTimers.set(button, timer);
-    }
-
-    updateCooldown();
 }
 
 /* ==========================================
@@ -345,10 +388,15 @@ function showColorSummary(values) {
     colorSummary?.classList.remove("hidden");
 }
 
+/* ==========================================
+   ANÁLISE DE CORES
+========================================== */
+
 async function generateColorDemo() {
 
     if (!navigationReady) return;
     if (colorRunning) return;
+    if (isCooldownActive("colors")) return;
 
     if (
         !colorButton ||
@@ -362,14 +410,9 @@ async function generateColorDemo() {
     }
 
     colorRunning = true;
-    updateAnalysisAccess();
 
-    startCooldown(
-        colorButton,
-        CONFIG.colorCooldown,
-        "ϟ GERAR ANÁLISE",
-        () => colorRunning
-    );
+    startCooldown("colors");
+    updateAnalysisAccess();
 
     try {
         playInterfaceSound();
@@ -437,7 +480,7 @@ function resetDice() {
 }
 
 /* ==========================================
-   EFEITO VISUAL DO SCANNER NOS DADOS
+   SCANNER DOS DADOS
 ========================================== */
 
 function startDiceScanner() {
@@ -498,13 +541,14 @@ function fillDice() {
 }
 
 /* ==========================================
-   ANÁLISE DEMONSTRATIVA DOS DUPLOS
+   ANÁLISE DE DUPLOS
 ========================================== */
 
 async function generateDoublesDemo() {
 
     if (!navigationReady) return;
     if (doublesRunning) return;
+    if (isCooldownActive("doubles")) return;
 
     if (!doublesButton || !diceArea || !doublesSummary) {
         console.error("Elementos dos duplos não encontrados.");
@@ -512,14 +556,9 @@ async function generateDoublesDemo() {
     }
 
     doublesRunning = true;
-    updateAnalysisAccess();
 
-    startCooldown(
-        doublesButton,
-        CONFIG.doublesCooldown,
-        "ϟ GERAR ANÁLISE DE DUPLOS",
-        () => doublesRunning
-    );
+    startCooldown("doubles");
+    updateAnalysisAccess();
 
     try {
         playInterfaceSound();
@@ -555,10 +594,6 @@ doublesButton?.addEventListener(
     "click",
     generateDoublesDemo
 );
-
-/* ==========================================
-   CENTRAL DE NAVEGAÇÃO / IFRAME
-========================================== */
 
 /* ==========================================
    CENTRAL DE NAVEGAÇÃO / IFRAME
