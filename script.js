@@ -663,7 +663,7 @@ urlForm?.addEventListener("submit", (event) => {
 
             showAccessMessage(
                 "NAVEGAÇÃO INICIADA",
-                "A página foi carregada no navegador.",
+                "A página foi carregada com sucesso.",
                 "success"
             );
 
