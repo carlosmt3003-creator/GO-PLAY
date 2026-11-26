@@ -1,4 +1,3 @@
-
 "use strict";
 
 /* ==========================================
@@ -177,6 +176,8 @@ function showAccessMessage(title, message, type = "") {
 ========================================== */
 
 function updateAnalysisAccess() {
+
+    window.aplicarBloqueioHorarios?.();   // <<< NOVO
 
     const hasUrl = Boolean(
         urlInput &&
@@ -716,3 +717,323 @@ resetDice();
 updateAnalysisAccess();
 
 console.log("MEGA SIC - Interface inicializada.");
+
+/* ==========================================
+   HORÁRIOS PROGRAMADOS / ENCERRADOS
+========================================== */
+
+(function () {
+
+    const SLOT_MS = 3 * 60 * 1000;      // intervalo de 3 minutos
+    const QTD_PROXIMOS = 4;             // sempre 4 horários futuros
+    const QTD_ENCERRADOS = 6;           // quantos encerrados mostrar
+    const HORARIOS_KEY = "goplay_horarios";
+
+    const elProximos = document.getElementById("proximosLista");
+    const elEncerrados = document.getElementById("encerradosLista");
+    const elRelogio = document.getElementById("relogioAtual");
+
+    if (!elProximos || !elEncerrados) return;
+
+    const ICON_RELOGIO =
+        '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+
+    const ICON_FOGO =
+        '<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4-1-6 1-10z"/></svg>';
+
+    const ICON_FOGO_PEQUENO =
+        '<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-4-1-6 1-10z"/></svg>';
+
+    /* ---------- estado salvo (sobrevive ao recarregar) ---------- */
+
+    let estado = carregarEstado();
+    let assinaturaAtual = "";
+
+    function carregarEstado() {
+        try {
+            const salvo = JSON.parse(localStorage.getItem(HORARIOS_KEY));
+            return {
+                hotId: salvo && typeof salvo.hotId === "number" ? salvo.hotId : null,
+                hotIds: salvo && Array.isArray(salvo.hotIds) ? salvo.hotIds : []
+            };
+        } catch {
+            return { hotId: null, hotIds: [] };
+        }
+    }
+
+    function salvarEstado() {
+        try {
+            localStorage.setItem(HORARIOS_KEY, JSON.stringify(estado));
+        } catch (erro) {
+            console.error("Erro ao salvar horários:", erro);
+        }
+    }
+
+    /* ---------- utilitários ---------- */
+
+    const pad = n => String(n).padStart(2, "0");
+
+    function formatarHora(ms) {
+        const d = new Date(ms);
+        return pad(d.getHours()) + ":" + pad(d.getMinutes());
+    }
+
+    function formatarHoraCompleta(ms) {
+        const d = new Date(ms);
+        return pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+    }
+
+    function formatarContagem(msRestantes) {
+        const total = Math.max(0, Math.ceil(msRestantes / 1000));
+        return pad(Math.floor(total / 60)) + ":" + pad(total % 60);
+    }
+
+    function inicioDoSlot(agora) {
+        return Math.floor(agora / SLOT_MS) * SLOT_MS;
+    }
+
+    function sorteio(max) {
+        try {
+            const buffer = new Uint32Array(1);
+            crypto.getRandomValues(buffer);
+            return buffer[0] % max;
+        } catch {
+            return Math.floor(Math.random() * max);
+        }
+    }
+
+    /* ---------- histórico: mesmo minuto, voltando 1h por registro ---------- */
+
+    function calcularHistorico(inicio) {
+        const fim = inicio + SLOT_MS;
+
+        return [1, 2, 3].map(horas => formatarHora(fim - horas * 3600000));
+    }
+
+    /* ---------- resultado confirmado (somente se existir fonte real) ----------
+       Por padrão nada é marcado como acerto. Se você tiver uma fonte real de
+       resultados, preencha window.GOPLAY_RESULTADOS assim:
+       window.GOPLAY_RESULTADOS = { "20:08 - 20:11": { confirmado: true, vezes: 2 } };
+    ------------------------------------------------------------------------ */
+
+    function obterResultado(inicio) {
+        const fonte = window.GOPLAY_RESULTADOS;
+        if (!fonte) return null;
+
+        const chave = formatarHora(inicio) + " - " + formatarHora(inicio + SLOT_MS);
+        const item = fonte[chave];
+
+        return item && item.confirmado === true ? item : null;
+    }
+
+    /* ---------- escolha aleatória do destaque (estável no ciclo) ---------- */
+
+    function garantirDestaque(ids) {
+        if (ids.includes(estado.hotId)) return;
+
+        estado.hotId = ids[sorteio(ids.length)];
+
+        if (!estado.hotIds.includes(estado.hotId)) {
+            estado.hotIds.push(estado.hotId);
+        }
+
+        estado.hotIds = estado.hotIds.slice(-60);
+
+        salvarEstado();
+    }
+
+    /* ---------- montagem dos cartões ---------- */
+
+    function montarCartao(inicio, tipo, agora) {
+        const fim = inicio + SLOT_MS;
+        const destaque = tipo === "proximo"
+            ? inicio === estado.hotId
+            : estado.hotIds.includes(inicio);
+
+        const historico = calcularHistorico(inicio)
+            .map(hora => `<b>${hora}</b>`)
+            .join(" · ");
+
+        const rotulo = destaque
+            ? `<span class="hr-label">${ICON_FOGO_PEQUENO} DESTAQUE ALEATÓRIO</span>`   // <<< CORRIGIDO
+            : "";
+
+        let tags = "";
+
+        if (tipo === "proximo") {
+            const emAndamento = agora >= inicio;
+
+            tags = `
+                <span class="hr-tag ${destaque ? "hr-tag-gray" : "hr-tag-ok"}">${emAndamento ? "EM ANDAMENTO" : "PRÓXIMO"}</span>
+                <span class="hr-tag hr-tag-gray hr-count" data-inicio="${inicio}">--:--</span>
+            `;
+        } else {
+            const resultado = obterResultado(inicio);
+
+            if (resultado) {
+                tags = `
+                    <span class="hr-tag hr-tag-ok">TRIPLO! ✓</span>
+                    <span class="hr-tag hr-tag-gray">${Number(resultado.vezes) || 1}× NAS 3H</span>
+                `;
+            } else {
+                tags = `<span class="hr-tag hr-tag-gray">ENCERRADO</span>`;   // <<< CORRIGIDO
+            }
+        }
+
+        return `
+            <div class="hr-card ${destaque ? "hot" : ""}" data-id="${inicio}">
+                <div class="hr-icon">${destaque ? ICON_FOGO : ICON_RELOGIO}</div>
+                <div class="hr-main">
+                    <div class="hr-time">${formatarHora(inicio)} - ${formatarHora(fim)}</div>
+                    ${rotulo}
+                    <div class="hr-history">Histórico: ${historico}</div>
+                </div>
+                <div class="hr-tags">${tags}</div>
+            </div>
+        `;
+    }
+
+    /* ---------- renderização ---------- */
+
+    function renderizar(agora) {
+        const primeiro = inicioDoSlot(agora);
+
+        const proximos = [];
+        for (let i = 0; i < QTD_PROXIMOS; i++) {
+            proximos.push(primeiro + i * SLOT_MS);
+        }
+
+        const encerrados = [];
+        for (let i = 1; i <= QTD_ENCERRADOS; i++) {
+            encerrados.push(primeiro - i * SLOT_MS);
+        }
+
+        garantirDestaque(proximos);
+
+        // Marca como destaque no histórico os que já foram sorteados
+        const assinatura = primeiro + "|" + estado.hotId + "|" + estado.hotIds.join(",");
+
+        if (assinatura === assinaturaAtual) return;
+
+        assinaturaAtual = assinatura;
+
+        elProximos.innerHTML = proximos
+            .map(inicio => montarCartao(inicio, "proximo", agora))
+            .join("");
+
+        const htmlEncerrados = encerrados
+            .map(inicio => montarCartao(inicio, "encerrado", agora))
+            .join("");
+
+        elEncerrados.innerHTML =
+            htmlEncerrados || '<div class="hr-empty">Nenhum horário encerrado ainda.</div>';
+    }
+
+    /* ---------- atualização a cada segundo ---------- */
+
+    function atualizarContagens(agora) {
+        elProximos.querySelectorAll(".hr-count").forEach(el => {
+            const inicio = Number(el.dataset.inicio);
+            const fim = inicio + SLOT_MS;
+
+            if (agora < inicio) {
+                el.textContent = "começa em " + formatarContagem(inicio - agora);
+            } else {
+                el.textContent = "termina em " + formatarContagem(fim - agora);
+            }
+        });
+    }
+
+    /* ---------- bloqueio até abrir uma URL ---------- */   // <<< NOVO
+
+    const elBloqueio = document.getElementById("horariosBloqueio");   // <<< NOVO
+
+    function aplicarBloqueio() {   // <<< NOVO
+        if (!elBloqueio) return;
+
+        const liberado = typeof navigationReady !== "undefined" && navigationReady === true;
+
+        elBloqueio.classList.toggle("bloqueado", !liberado);
+    }
+
+    window.aplicarBloqueioHorarios = aplicarBloqueio;   // <<< NOVO
+
+    function tick() {
+        const agora = Date.now();
+
+        aplicarBloqueio();   // <<< NOVO
+
+        if (elRelogio) {
+            elRelogio.textContent = formatarHoraCompleta(agora);
+        }
+
+        renderizar(agora);
+        atualizarContagens(agora);
+    }
+
+    tick();
+
+    setInterval(tick, 1000);
+
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) tick();
+    });
+
+})();
+/* ==========================================
+   ALÇA LATERAL: ARRASTAR PARA ROLAR A PÁGINA
+========================================== */
+
+(function () {
+
+    const handle = document.getElementById("iframeDragHandle");
+
+    if (!handle) return;
+
+    let arrastando = false;
+    let ultimoY = 0;
+
+    handle.addEventListener("pointerdown", (event) => {
+        arrastando = true;
+        ultimoY = event.clientY;
+
+        handle.setPointerCapture(event.pointerId);
+        handle.classList.add("dragging");
+
+        // o CSS tem scroll-behavior: smooth, que atrasaria o movimento
+        document.documentElement.style.scrollBehavior = "auto";
+
+        event.preventDefault();
+    });
+
+    handle.addEventListener("pointermove", (event) => {
+        if (!arrastando) return;
+
+        const diferenca = ultimoY - event.clientY;
+
+        ultimoY = event.clientY;
+
+        // dedo sobe, página sobe; dedo desce, página desce
+        window.scrollBy(0, diferenca);
+
+        event.preventDefault();
+    });
+
+    function terminar(event) {
+        if (!arrastando) return;
+
+        arrastando = false;
+
+        handle.classList.remove("dragging");
+
+        document.documentElement.style.scrollBehavior = "";
+
+        try {
+            handle.releasePointerCapture(event.pointerId);
+        } catch {}
+    }
+
+    handle.addEventListener("pointerup", terminar);
+    handle.addEventListener("pointercancel", terminar);
+
+})();

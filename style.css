@@ -209,15 +209,9 @@ input {
 }
 
 .panel-status {
-    padding: 6px 10px;
-    border: 1px solid #28533e;
-    border-radius: 20px;
-    background: #0b2117;
-    color: var(--green);
-    font-size: 9px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    flex-shrink: 0;
+    color: var(--gold);
+    font-size: 30px;
+    margin-left: auto;
 }
 
 .subheading {
@@ -1489,5 +1483,502 @@ input:focus-visible {
 
     .drag-label {
         font-size: 11px;
+    }
+}/* ==========================================
+   HORÁRIOS PROGRAMADOS / ENCERRADOS
+========================================== */
+
+.horarios-panel {
+    margin-top: 6px;
+}
+
+.hr-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.hr-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 30px 0 22px;
+}
+
+.hr-divider::before,
+.hr-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #3a4540);
+}
+
+.hr-divider::after {
+    background: linear-gradient(270deg, transparent, #3a4540);
+}
+
+.hr-divider span {
+    padding: 8px 22px;
+    border: 1px solid #3a4540;
+    border-radius: 999px;
+    background: #141a17;
+    color: #f1f5f2;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 14px #0006;
+}
+
+/* CARTÃO VERDE (PADRÃO) */
+
+.hr-card {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 1px solid #0f5a3f;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #0a1f17, #08120d);
+    box-shadow: 0 0 16px #13c98510, inset 0 0 18px #13c9850a;
+    animation: appear .4s ease;
+}
+
+.hr-icon {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: #0b2a1e;
+    color: #1fe08f;
+}
+
+.hr-main {
+    min-width: 0;
+}
+
+.hr-time {
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    color: #1fe08f;
+    text-shadow: 0 0 10px #1fe08f40;
+    white-space: nowrap;
+}
+
+.hr-history {
+    margin-top: 6px;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
+    font-size: 13px;
+    color: #7d8a83;
+    line-height: 1.5;
+}
+
+.hr-history b {
+    font-weight: 700;
+    color: #e8efe9;
+}
+
+.hr-tags {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.hr-tag {
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.hr-tag-ok {
+    border: 1px solid #167a54;
+    background: #0b2a1e;
+    color: #1fe08f;
+}
+
+.hr-tag-gray {
+    background: #063b2b;
+    border: 1px solid #19c987;
+    color: #19c987;
+}
+/* CARTÃO LARANJA (DESTAQUE ALEATÓRIO) */
+
+.hr-card.hot {
+    border-color: #c25a10;
+    background: linear-gradient(145deg, #2a1206, #150a05);
+    box-shadow:
+        0 0 22px #ff7a0033,
+        0 0 44px #ff7a001a,
+        inset 0 0 22px #ff7a0014;
+}
+
+.hr-card.hot .hr-icon {
+    background: #3a1a08;
+    color: #ff6a1a;
+    box-shadow: 0 0 18px #ff6a1a55;
+}
+
+.hr-card.hot .hr-time {
+    color: #ffb020;
+    text-shadow: 0 0 10px #ffb02055;
+}
+
+.hr-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 4px 10px;
+    border: 1px solid #a3252b;
+    border-radius: 6px;
+    background: #4a0f12;
+    color: #ffd3cf;
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.hr-card.hot .hr-history {
+    color: #b98a4a;
+}
+
+.hr-card.hot .hr-history b {
+    color: #ffb020;
+}
+
+.hr-card.hot .hr-tag-ok,
+.hr-card.hot .hr-tag-gray {
+    border-color: #c2410c;
+    background: #3a1308;
+    color: #ffb020;
+}
+
+.hr-note {
+    margin-top: 22px;
+    color: #758078;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.hr-empty {
+    padding: 18px;
+    border: 1px dashed #2c3631;
+    border-radius: 16px;
+    color: #758078;
+    font-size: 12px;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .hr-card {
+        grid-template-columns: 44px minmax(0, 1fr) auto;
+        gap: 10px;
+        padding: 14px 12px;
+    }
+
+    .hr-icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .hr-time {
+        font-size: 18px;
+    }
+
+    .hr-history {
+        font-size: 11px;
+    }
+
+    .hr-tag {
+        padding: 6px 10px;
+        font-size: 10px;
+    }
+
+    .hr-label {
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+}/* ==========================================
+   BLOQUEIO DOS PRÓXIMOS HORÁRIOS
+========================================== */
+
+.hr-proximos {
+    position: relative;
+}
+
+.hr-conteudo {
+    transition: filter .4s ease, opacity .4s ease;
+}
+
+.hr-proximos.bloqueado .hr-conteudo {
+    filter: blur(9px);
+    opacity: .65;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.hr-bloqueio-aviso {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+.hr-proximos.bloqueado .hr-bloqueio-aviso {
+    display: flex;
+}
+
+.hr-cadeado {
+    font-size: 30px;
+}
+
+.hr-bloqueio-aviso strong {
+    padding: 8px 18px;
+    border: 1px solid #3a4540;
+    border-radius: 999px;
+    background: #141a17;
+    color: #f1f5f2;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 14px #0008;
+}
+
+.hr-bloqueio-aviso small {
+    max-width: 280px;
+    color: #c4cdc8;
+    font-size: 12px;
+    line-height: 1.5;
+    text-shadow: 0 1px 6px #000;
+}/* ==========================================
+   CABEÇALHO DOS HORÁRIOS (DADOS + RELÓGIO)
+========================================== */
+
+.hr-topo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 4px 0 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #242f29;
+}
+
+.hr-topo-texto {
+    flex: 1;
+    min-width: 0;
+}
+
+.hr-topo-texto h2 {
+    color: #ffffff;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.hr-topo-texto span {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* DADOS FEITOS SÓ COM CSS */
+
+.hr-dados {
+    position: relative;
+    width: 70px;
+    height: 62px;
+    flex-shrink: 0;
+}
+
+.hr-dado {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background-color: #f4f1ea;
+    box-shadow: 0 3px 8px #0009, inset 0 -2px 0 #0002;
+}
+
+/* dado 3 */
+.hr-dado.d-a {
+    left: 2px;
+    top: 6px;
+    transform: rotate(-12deg);
+    background-image:
+        radial-gradient(circle at 25% 25%, #17171a 2.4px, transparent 2.9px),
+        radial-gradient(circle at 50% 50%, #17171a 2.4px, transparent 2.9px),
+        radial-gradient(circle at 75% 75%, #17171a 2.4px, transparent 2.9px);
+}
+
+/* dado 4 */
+.hr-dado.d-b {
+    left: 36px;
+    top: 0;
+    transform: rotate(12deg);
+    background-image:
+        radial-gradient(circle at 25% 25%, #17171a 2.4px, transparent 2.9px),
+        radial-gradient(circle at 75% 25%, #17171a 2.4px, transparent 2.9px),
+        radial-gradient(circle at 25% 75%, #17171a 2.4px, transparent 2.9px),
+        radial-gradient(circle at 75% 75%, #17171a 2.4px, transparent 2.9px);
+}
+
+/* dado 5 */
+.hr-dado.d-c {
+    left: 19px;
+    top: 29px;
+    transform: rotate(-4deg);
+    background-image:
+        radial-gradient(circle at 25% 25%, #17171a 2.4px, transparent 2.9px),
+        radial-gradient(circle at 75% 25%, #17171a 2.4px, transparent 2.9px),
+        radial-gradient(circle at 50% 50%, #17171a 2.4px, transparent 2.9px),
+        radial-gradient(circle at 25% 75%, #17171a 2.4px, transparent 2.9px),
+        radial-gradient(circle at 75% 75%, #17171a 2.4px, transparent 2.9px);
+}
+
+/* LADO DIREITO: RELÓGIO + AJUDA */
+
+.hr-topo-direita {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.hr-relogio {
+    padding: 7px 11px;
+    border: 1px solid #28533e;
+    border-radius: 20px;
+    background: #0b2117;
+    color: var(--green);
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.hr-ajuda {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border: 1.5px solid #cfd6d2;
+    border-radius: 50%;
+    background: transparent;
+    color: #e8efe9;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.hr-ajuda-texto {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 20;
+    width: 230px;
+    padding: 12px 14px;
+    border: 1px solid #3a4540;
+    border-radius: 12px;
+    background: #141a17;
+    color: #c4cdc8;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.55;
+    text-align: left;
+    box-shadow: 0 10px 28px #000a;
+}
+
+.hr-ajuda:hover .hr-ajuda-texto,
+.hr-ajuda:focus .hr-ajuda-texto {
+    display: block;
+}
+
+@media (max-width: 480px) {
+    .hr-topo {
+        gap: 10px;
+    }
+
+    .hr-topo-texto h2 {
+        font-size: 16px;
+    }
+
+    .hr-topo-texto span {
+        font-size: 11px;
+    }
+
+    .hr-topo-direita {
+        flex-direction: column-reverse;
+        align-items: flex-end;
+        gap: 6px;
+    }
+
+    .hr-relogio {
+        padding: 5px 9px;
+        font-size: 10px;
+    }
+
+    .hr-ajuda {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
+    }
+}
+/* ÁREA DE TOQUE MAIOR NA ALÇA (invisível) */
+
+.iframe-drag-handle::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -10px;
+    right: -10px;
+}
+
+.iframe-drag-handle {
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+}/* ALÇA DENTRO DO PALCO (não sai mais da tela) */
+
+.iframe-stage {
+    padding-right: 28px;
+}
+
+.iframe-drag-handle {
+    left: auto;
+    right: 0;
+    width: 26px;
+}
+
+@media (max-width: 600px) {
+    .iframe-stage {
+        padding-right: 26px;
+    }
+
+    .iframe-drag-handle {
+        left: auto;
+        right: 0;
+        width: 24px;
     }
 }
