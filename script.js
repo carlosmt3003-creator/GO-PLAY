@@ -855,7 +855,7 @@ console.log("MEGA SIC - Interface inicializada.");
             .join(" · ");
 
         const rotulo = destaque
-            ? `<span class="hr-label">${ICON_FOGO_PEQUENO} DESTAQUE ALEATÓRIO</span>`   // <<< CORRIGIDO
+            ? `<span class="hr-label">${ICON_FOGO_PEQUENO} MUITO QUENTE</span>`   // <<< CORRIGIDO
             : "";
 
         let tags = "";
@@ -876,7 +876,7 @@ console.log("MEGA SIC - Interface inicializada.");
                     <span class="hr-tag hr-tag-gray">${Number(resultado.vezes) || 1}× NAS 3H</span>
                 `;
             } else {
-                tags = `<span class="hr-tag hr-tag-gray">ENCERRADO</span>`;   // <<< CORRIGIDO
+                tags = `<span class="hr-tag hr-tag-gray">Triplo ✓</span>`;   // <<< CORRIGIDO
             }
         }
 
