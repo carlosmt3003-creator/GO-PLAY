@@ -1982,3 +1982,449 @@ input:focus-visible {
         width: 24px;
     }
 }
+/* ==========================================
+   GO PLAY — GESTÃO QIA
+   CONTROLE FINANCEIRO PESSOAL
+========================================== */
+
+.qia-launcher {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 9998;
+    border: 1px solid #5940ed;
+    border-radius: 14px;
+    padding: 14px 20px;
+    background: #17132e;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 30px #0008;
+    transition: .2s;
+}
+
+.qia-launcher:hover {
+    background: #5940ed;
+    transform: translateY(-3px);
+}
+
+.qia-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    background: #000b;
+    backdrop-filter: blur(8px);
+}
+
+.qia-overlay.active {
+    display: block;
+}
+
+.qia-panel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(1100px, 100%);
+    height: 100%;
+    overflow-y: auto;
+    padding: 28px;
+    color: #f1f5f2;
+    background: #030906;
+    border-left: 1px solid #242f29;
+    animation: qiaEnter .25s ease;
+}
+
+@keyframes qiaEnter {
+    from { transform: translateX(35px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.qia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 28px;
+}
+
+.qia-header h2 {
+    margin: 0;
+    font-size: 25px;
+    letter-spacing: -.7px;
+}
+
+.qia-header p {
+    margin: 6px 0 0;
+    color: #84918a;
+    font-size: 13px;
+}
+
+.qia-close {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #242f29;
+    border-radius: 12px;
+    background: #090f0c;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.qia-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.qia-card {
+    min-width: 0;
+    padding: 19px;
+    border: 1px solid #242f29;
+    border-radius: 15px;
+    background: #090f0c;
+}
+
+.qia-card span {
+    display: block;
+    color: #84918a;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.qia-card strong {
+    display: block;
+    font-size: 23px;
+    overflow-wrap: anywhere;
+}
+
+.qia-card small {
+    display: block;
+    color: #84918a;
+    margin-top: 8px;
+}
+
+.qia-section {
+    padding: 21px;
+    margin-bottom: 18px;
+    border: 1px solid #242f29;
+    border-radius: 15px;
+    background: #090f0c;
+}
+
+.qia-section h3 {
+    margin: 0 0 18px;
+    font-size: 16px;
+}
+
+.qia-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.qia-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.qia-field label {
+    color: #a6b1aa;
+    font-size: 12px;
+}
+
+.qia-field input,
+.qia-field select {
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid #242f29;
+    border-radius: 9px;
+    outline: none;
+    background: #030906;
+    color: #f1f5f2;
+    font: inherit;
+}
+
+.qia-field input:focus,
+.qia-field select:focus {
+    border-color: #5940ed;
+}
+
+.qia-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 16px;
+}
+
+.qia-btn {
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid #5940ed;
+    border-radius: 9px;
+    background: #5940ed;
+    color: white;
+    font-weight: 650;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.qia-btn:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+}
+
+.qia-btn.secondary {
+    border-color: #242f29;
+    background: #101812;
+}
+
+.qia-btn.danger {
+    border-color: #713a3a;
+    background: #281313;
+    color: #ffaaaa;
+}
+
+.qia-progress {
+    width: 100%;
+    height: 9px;
+    overflow: hidden;
+    margin-top: 13px;
+    border-radius: 20px;
+    background: #1c2820;
+}
+
+.qia-progress div {
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: #5940ed;
+    transition: width .3s;
+}
+
+.qia-chart {
+    width: 100%;
+    min-height: 210px;
+    overflow: hidden;
+}
+
+.qia-chart svg {
+    display: block;
+    width: 100%;
+    height: 210px;
+    overflow: visible;
+}
+
+.qia-chart-empty {
+    display: grid;
+    min-height: 180px;
+    place-items: center;
+    color: #84918a;
+    font-size: 13px;
+}
+
+.qia-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.qia-table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.qia-table th,
+.qia-table td {
+    padding: 13px 11px;
+    border-bottom: 1px solid #202a23;
+    text-align: left;
+}
+
+.qia-table th {
+    color: #84918a;
+    font-weight: 600;
+}
+
+.qia-positive {
+    color: #54d69b;
+}
+
+.qia-negative {
+    color: #ff7777;
+}
+
+.qia-empty {
+    padding: 25px !important;
+    color: #84918a;
+    text-align: center !important;
+}
+
+.qia-row-actions {
+    display: flex;
+    gap: 7px;
+}
+
+.qia-row-actions button {
+    padding: 6px 9px;
+    border: 1px solid #303c34;
+    border-radius: 7px;
+    background: #101812;
+    color: #eee;
+    cursor: pointer;
+}
+
+.qia-notice {
+    position: fixed;
+    right: 24px;
+    bottom: 85px;
+    z-index: 10001;
+    max-width: min(350px, calc(100vw - 32px));
+    padding: 13px 17px;
+    border: 1px solid #5940ed;
+    border-radius: 10px;
+    background: #17132e;
+    color: white;
+    box-shadow: 0 8px 30px #0008;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: .2s;
+}
+
+.qia-notice.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.qia-hidden {
+    display: none !important;
+}
+
+@media (max-width: 850px) {
+    .qia-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .qia-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .qia-panel {
+        padding: 18px 13px;
+    }
+
+    .qia-grid {
+        gap: 9px;
+    }
+
+    .qia-card {
+        padding: 14px;
+    }
+
+    .qia-card strong {
+        font-size: 19px;
+    }
+
+    .qia-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .qia-section {
+        padding: 15px;
+    }
+
+    .qia-launcher {
+        right: 14px;
+        bottom: 14px;
+    }
+}
+
+/* MODAL QIA */
+
+.qia-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10005;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, .78);
+    backdrop-filter: blur(7px);
+    animation: qiaModalFade .2s ease;
+}
+
+.qia-confirm-modal {
+    width: 100%;
+    max-width: 390px;
+    padding: 26px;
+    border: 1px solid #303b33;
+    border-radius: 17px;
+    background: #090f0c;
+    box-shadow: 0 20px 70px #0009;
+    animation: qiaModalEnter .2s ease;
+}
+
+.qia-confirm-icon {
+    display: grid;
+    width: 43px;
+    height: 43px;
+    place-items: center;
+    border-radius: 12px;
+    background: #261d38;
+    color: #a995ff;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.qia-confirm-modal h3 {
+    margin: 18px 0 8px;
+    color: #f1f5f2;
+    font-size: 18px;
+}
+
+.qia-confirm-message {
+    color: #84918a;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.qia-confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 24px;
+}
+
+.qia-confirm-actions button {
+    min-height: 40px;
+    padding: 0 15px;
+    border: 1px solid #303b33;
+    border-radius: 9px;
+    background: #101812;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.qia-confirm-actions .qia-confirm-accept {
+    border-color: #5940ed;
+    background: #5940ed;
+}
+
+@keyframes qiaModalFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes qiaModalEnter {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
