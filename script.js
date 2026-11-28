@@ -1164,7 +1164,7 @@ console.log("MEGA SIC - Interface inicializada.");
         const launcher = document.createElement("button");
         launcher.className = "qia-launcher";
         launcher.type = "button";
-        launcher.textContent = "GESTÃO QIA";
+        launcher.textContent = "GESTÃO COM IA";
         launcher.addEventListener("click", openPanel);
 
         const overlay = document.createElement("div");
@@ -1172,11 +1172,11 @@ console.log("MEGA SIC - Interface inicializada.");
 
         overlay.innerHTML = `
             <main class="qia-panel" role="dialog" aria-modal="true"
-                aria-label="Gestão financeira QIA">
+                aria-label="Gestão financeira com IA">
 
                 <header class="qia-header">
                     <div>
-                        <h2>GESTÃO <span style="color:#8b78ff">QIA</span></h2>
+                        <h2>GESTÃO <span style="color:#8b78ff">COM IA</span></h2>
                         <p>Seu controle financeiro pessoal</p>
                     </div>
                     <button class="qia-close" type="button"
